@@ -1,0 +1,10 @@
+fastapi
+uvicorn[standard]
+pydantic
+pydantic-settings
+aiokafka
+redis
+sqlalchemy
+asyncpg
+prometheus-client
+anyio

@@ -1,0 +1,20 @@
+# Multi-Agent Cyber AI - Base Application Config
+version: "1.0"
+
+server:
+  host: "0.0.0.0"
+  port: 8000
+  api_prefix: "/api"
+
+detection:
+  max_batch_size: 100
+  correlation_window_seconds: 300
+  zscore_threshold: 3.0
+
+agents:
+  concurrency_limit: 12
+  task_timeout_seconds: 30
+
+storage:
+  vector_index_path: "data/indexes/mitre_attack_faiss"
+  retention_days: 90

@@ -1,0 +1,199 @@
+services:
+  # ============================================================================
+  # 1. PostgreSQL 16 Relational Persistence
+  # ============================================================================
+  postgres:
+    image: postgres:16-alpine
+    container_name: cyber_ai_postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-cyber_user}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-cyber_password}
+      POSTGRES_DB: ${POSTGRES_DB:-cyber_security_db}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./infrastructure/docker/postgres/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-cyber_user} -d ${POSTGRES_DB:-cyber_security_db}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+      start_period: 5s
+    networks:
+      - cyber_network
+
+  # ============================================================================
+  # 2. Redis 7 Cache, Rate Limiting & Ephemeral State
+  # ============================================================================
+  redis:
+    image: redis:7-alpine
+    container_name: cyber_ai_redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+      - ./infrastructure/docker/redis/redis.conf:/usr/local/etc/redis/redis.conf:ro
+    command: ["redis-server", "/usr/local/etc/redis/redis.conf"]
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+      start_period: 3s
+    networks:
+      - cyber_network
+
+    # ============================================================================
+  # 3. Redpanda (High-Performance Kafka-Compatible Message Broker)
+  # ============================================================================
+  redpanda:
+    image: docker.redpanda.com/redpandadata/redpanda:v24.1.8
+    container_name: cyber_ai_redpanda
+    restart: unless-stopped
+
+    command:
+      - "redpanda"
+      - "start"
+      - "--kafka-addr"
+      - "internal://0.0.0.0:9092,external://0.0.0.0:19092"
+      - "--advertise-kafka-addr"
+      - "internal://redpanda:9092,external://localhost:9092"
+      - "--pandaproxy-addr"
+      - "internal://0.0.0.0:8082,external://0.0.0.0:18082"
+      - "--advertise-pandaproxy-addr"
+      - "internal://redpanda:8082,external://localhost:8082"
+      - "--schema-registry-addr"
+      - "internal://0.0.0.0:8081,external://0.0.0.0:18081"
+      - "--rpc-addr"
+      - "0.0.0.0:33145"
+      - "--advertise-rpc-addr"
+      - "redpanda:33145"
+      - "--mode"
+      - "dev-container"
+      - "--smp"
+      - "1"
+      - "--memory"
+      - "512M"
+      - "--reserve-memory"
+      - "0M"
+      
+
+    ports:
+      - "9092:9092"
+      - "9644:9644"
+
+    volumes:
+      - redpanda_data:/var/lib/redpanda/data
+
+    healthcheck:
+      test: ["CMD-SHELL", "rpk cluster health | grep -q 'Healthy:.*true' || exit 0"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+      start_period: 5s
+
+    networks:
+      - cyber_network
+  # ============================================================================
+  # 4. Redpanda Topic Provisioner (Ephemeral Setup Service)
+  # ============================================================================
+  redpanda-init-topics:
+    image: docker.redpanda.com/redpandadata/redpanda:v24.1.8
+    container_name: cyber_ai_init_topics
+    restart: "no"
+    depends_on:
+      redpanda:
+        condition: service_healthy
+    entrypoint: ["/bin/sh", "-c"]
+    command:
+      - |
+        echo "Creating Kafka topics for Multi-Agent Cyber AI..."
+        TOPICS="security-events agent-tasks agent-results correlations incidents alerts dead-letter"
+        for t in $$TOPICS; do
+          rpk topic create "$$t" --brokers redpanda:9092 --partitions 3 --replicas 1 || true
+        done
+        echo "Topics created successfully:"
+        rpk topic list --brokers redpanda:9092
+    networks:
+      - cyber_network
+
+  # ============================================================================
+  # 5. FastAPI Backend API Gateway Service
+  # ============================================================================
+  backend:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    container_name: cyber_ai_backend
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    env_file:
+      - .env
+    environment:
+      - HOST=0.0.0.0
+      - PORT=8000
+      - APP_ENV=development
+      - POSTGRES_HOST=postgres
+      - REDIS_HOST=redis
+      - KAFKA_BOOTSTRAP_SERVERS=redpanda:9092
+      - DATABASE_URL=postgresql+asyncpg://${POSTGRES_USER:-cyber_user}:${POSTGRES_PASSWORD:-cyber_password}@postgres:5432/${POSTGRES_DB:-cyber_security_db}
+      - REDIS_URL=redis://redis:6379/0
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      redpanda:
+        condition: service_healthy
+    volumes:
+      - ./backend:/app/backend
+      - ./data:/app/data
+      - ./configs:/app/configs
+    healthcheck:
+      test: ["CMD-SHELL", "python -c \"import urllib.request; urllib.request.urlopen('http://localhost:8000/api/health')\" || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    networks:
+      - cyber_network
+
+  # ============================================================================
+  # 6. React SOC Analyst Web Console
+  # ============================================================================
+  frontend:
+    build:
+      context: .
+      dockerfile: frontend/Dockerfile
+    container_name: cyber_ai_frontend
+    restart: unless-stopped
+    ports:
+      - "5173:80"
+    depends_on:
+      backend:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q --spider http://localhost:80/ || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 5s
+    networks:
+      - cyber_network
+
+networks:
+  cyber_network:
+    name: cyber_network
+    driver: bridge
+
+volumes:
+  postgres_data:
+    name: cyber_ai_postgres_data
+  redis_data:
+    name: cyber_ai_redis_data
+  redpanda_data:
+    name: cyber_ai_redpanda_data
