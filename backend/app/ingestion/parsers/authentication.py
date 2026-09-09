@@ -99,8 +99,8 @@ class AuthenticationLogParser(EventParser):
 
     def _extract_username(self, data: dict[str, Any]) -> str | None:
         user_id_obj: dict[str, Any] = (
-        data["userIdentity"] if isinstance(data.get("userIdentity"), dict) else {}
-)
+            data["userIdentity"] if isinstance(data.get("userIdentity"), dict) else {}
+        )
         username = (
             data.get("TargetUserName")
             or data.get("username")
