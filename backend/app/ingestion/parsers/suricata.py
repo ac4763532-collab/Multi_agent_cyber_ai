@@ -113,8 +113,8 @@ class SuricataEveParser(EventParser):
             url = str(data["url"])
 
         # Extract Hostname
-        http_data = data.get("http") if isinstance(data.get("http"), dict) else {}
-        tls_data = data.get("tls") if isinstance(data.get("tls"), dict) else {}
+        http_data: dict[str, Any] = data["http"] if isinstance(data.get("http"), dict) else {}
+        tls_data: dict[str, Any] = data["tls"] if isinstance(data.get("tls"), dict) else {}
         hostname = data.get("hostname") or http_data.get("hostname") or tls_data.get("sni")
 
         return ParsedEvent(
