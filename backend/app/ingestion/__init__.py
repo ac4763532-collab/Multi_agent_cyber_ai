@@ -42,6 +42,7 @@ __all__ = [
     "JsonEventCollector",
     "SuricataCollector",
     "SyslogCollector",
+    "DeadLetterHandler",
     "DeadLetterQueueManager",
     "EventNormalizer",
     "EventParser",

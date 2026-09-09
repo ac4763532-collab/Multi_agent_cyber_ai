@@ -49,7 +49,10 @@ class IngestionResultResponse(BaseModel):
     timestamp: str | None = Field(default=None, description="Event occurrence timestamp")
     latency_ms: float = Field(..., description="Processing latency in milliseconds")
     error: str | None = Field(default=None, description="Error reason if rejected")
-    dead_letter_id: str | None = Field(default=None, description="Dead letter record ID if rejected")
+    dead_letter_id: str | None = Field(
+        default=None,
+        description="Dead letter record ID if rejected",
+    )
 
 
 @router.post(

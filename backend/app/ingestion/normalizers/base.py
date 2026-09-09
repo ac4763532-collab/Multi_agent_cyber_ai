@@ -13,7 +13,10 @@ class BaseNormalizer(EventNormalizer):
 
     @staticmethod
     def _stamp_demonstration_tags(metadata: dict[str, Any], raw_payload: Any) -> None:
-        """Preserve synthetic/demo markers so generated events are never treated as live telemetry."""
+        """
+        Preserve synthetic/demo markers so generated events are never
+        treated as live telemetry.
+        """
         if isinstance(raw_payload, dict):
             environment = raw_payload.get("environment")
             synthetic = raw_payload.get("synthetic")

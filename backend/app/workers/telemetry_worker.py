@@ -20,7 +20,10 @@ logger = get_logger("cyber_ai.workers.telemetry")
 
 
 class TelemetryProcessingWorker:
-    """Consumes normalized security events from Kafka/Redpanda, persists to DB and caches in Redis."""
+    """
+    Consumes normalized security events from Kafka/Redpanda,
+    persists to DB and caches in Redis.
+    """
 
     def __init__(
         self,
@@ -152,7 +155,10 @@ class TelemetryProcessingWorker:
             self._task = asyncio.create_task(self._consume_loop())
         except Exception as exc:
             logger.warning(
-                "Could not start Kafka consumer in TelemetryProcessingWorker: %s (running in passive mode)",
+                (
+                    "could not start kafka consumer in TelemetryProcessingWorker:"
+                    "%s (running in passive mode)"
+                ),
                 str(exc),
             )
             self._is_running = False

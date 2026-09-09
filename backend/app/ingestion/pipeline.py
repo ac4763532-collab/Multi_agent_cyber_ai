@@ -19,10 +19,7 @@ from backend.app.ingestion.resilience.backpressure import (
     BackpressureController,
     BackpressureExceededError,
 )
-from backend.app.ingestion.resilience.dead_letter import (
-    DeadLetterQueueManager,
-    get_dlq_manager,
-)
+from backend.app.ingestion.resilience.dead_letter import get_dlq_manager
 from backend.app.ingestion.resilience.retry import retry_async
 from backend.app.schemas.events import SecurityEvent, validate_security_event_safely
 
@@ -30,7 +27,10 @@ logger = get_logger("cyber_ai.ingestion.pipeline")
 
 
 class IngestionPipeline:
-    """Master telemetry ingestion pipeline: Collector -> Validation -> Normalization -> Kafka -> Workers."""
+    """
+    Master telemetry ingestion pipeline:
+    Collector -> Validation -> Normalization -> Kafka -> Workers.
+    """
 
     def __init__(
         self,
@@ -103,7 +103,7 @@ class IngestionPipeline:
                 str(exc),
             )
 
-    async def ingest_single(
+    async def ingest_single(  # noqa: C901
         self,
         raw_payload: Any,
         source_type: str | TelemetrySourceType | None = None,
