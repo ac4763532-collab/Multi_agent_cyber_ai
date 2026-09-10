@@ -268,6 +268,21 @@ class SecurityEvent(BaseModel):
             ingestion_timestamp=self.ingestion_timestamp,
         )
 
+    @property
+    def lineage(self) -> EventLineage:
+        """Property returning the EventLineage provenance record."""
+        return self.get_lineage()
+
+    @property
+    def raw_input(self) -> dict[str, Any] | str:
+        """Alias property for raw_data preserving event lineage."""
+        return self.raw_data
+
+    @property
+    def normalized_representation(self) -> dict[str, Any]:
+        """Alias property for normalized_data preserving event lineage."""
+        return self.normalized_data
+
     def to_db_dict(self) -> dict[str, Any]:
         """Convert to dictionary matching the SQLAlchemy SecurityEventModel attributes."""
         sev = (

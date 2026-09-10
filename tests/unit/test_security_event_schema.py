@@ -274,6 +274,14 @@ def test_event_lineage_preservation(valid_event_dict: dict) -> None:
     assert isinstance(lineage.ingestion_timestamp, datetime)
     assert lineage.ingestion_timestamp.tzinfo is not None
 
+    # Verify property accessors
+    assert event.lineage == lineage
+    assert event.raw_input == valid_event_dict["raw_data"]
+    assert event.normalized_representation == valid_event_dict["normalized_data"]
+    assert event.parser_version == "1.0.0"
+    assert event.source == "suricata-sensor-01"
+    assert isinstance(event.ingestion_timestamp, datetime)
+
 
 def test_safe_validation_pipeline_resilience() -> None:
     """Verify safe validator never throws exceptions on corrupted or unexpected inputs."""

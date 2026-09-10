@@ -1,5 +1,6 @@
 """FastAPI application entry point."""
 
+import asyncio
 import time
 import uuid
 from collections.abc import AsyncGenerator
@@ -35,7 +36,15 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
     # Kafka worker is skipped in unit/integration tests so they do not wait on a broker.
     if settings.app_env != "test":
         worker = TelemetryProcessingWorker()
-        await worker.start()
+        try:
+            await asyncio.wait_for(
+                worker.start(),
+                timeout=(settings.kafka_request_timeout_ms / 1000.0) * 2,
+            )
+        except TimeoutError:
+            logger.warning(
+                "Telemetry worker start exceeded timeout; API will continue without live consumption"
+            )
         app.state.telemetry_worker = worker
     yield
     if worker is not None:
