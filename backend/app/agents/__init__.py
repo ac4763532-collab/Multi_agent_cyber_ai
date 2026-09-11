@@ -15,4 +15,56 @@ Encapsulates 12 specialized SOC intelligence agents:
 12. Report Generation Agent
 """
 
-__all__: list[str] = []
+from backend.app.agents.base import BaseAgent
+from backend.app.agents.exceptions import (
+    AgentError,
+    AgentNotFoundError,
+    AgentRegistrationError,
+    AgentTimeoutError,
+    AgentValidationError,
+    TaskDeadLetterError,
+    TaskExecutionError,
+    TaskRoutingError,
+)
+from backend.app.agents.models import (
+    AgentResult,
+    AgentStatus,
+    AgentTask,
+    AgentType,
+    BaseFinding,
+    ExecutionRecord,
+    ExecutionStatus,
+    ResultStatus,
+    TaskPriority,
+    TaskStatus,
+)
+from backend.app.agents.registry import AgentRegistry, get_agent_registry
+
+__all__ = [
+    # Base
+    "BaseAgent",
+    # Models
+    "AgentTask",
+    "AgentResult",
+    "BaseFinding",
+    "ExecutionRecord",
+    # Enums
+    "TaskStatus",
+    "TaskPriority",
+    "AgentType",
+    "AgentStatus",
+    "ResultStatus",
+    "ExecutionStatus",
+    # Registry
+    "AgentRegistry",
+    "get_agent_registry",
+    # Exceptions
+    "AgentError",
+    "AgentValidationError",
+    "AgentTimeoutError",
+    "AgentNotFoundError",
+    "TaskRoutingError",
+    "TaskExecutionError",
+    "TaskDeadLetterError",
+    "AgentRegistrationError",
+]

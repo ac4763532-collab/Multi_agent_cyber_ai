@@ -15,6 +15,7 @@ from backend.app.config.settings import get_settings
 from backend.app.core.broker import get_broker_manager
 from backend.app.core.exceptions import CyberAIError, SecurityBoundaryViolation
 from backend.app.core.logging import get_logger, setup_logging
+from backend.app.database.session import init_db
 from backend.app.schemas.common import ErrorResponse
 from backend.app.workers.telemetry_worker import TelemetryProcessingWorker
 
@@ -26,6 +27,8 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
     """Application lifespan context manager for startup and shutdown orchestration."""
     settings = get_settings()
     setup_logging(log_level=settings.log_level, log_format=settings.log_format)
+    await init_db()
+
     logger.info(
         "Starting %s v%s in %s mode",
         settings.app_name,

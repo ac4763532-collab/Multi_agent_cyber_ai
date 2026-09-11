@@ -1,0 +1,13 @@
+# Domain Blocklist - Test/Demo Data Only
+# Format: domain,category,source
+# Lines starting with # are comments
+#
+# WARNING: These are example domains for testing purposes only.
+# Replace with real threat intelligence feeds in production.
+
+malware-test.example.com,malware,test_data
+phishing-demo.example.org,phishing,test_data
+c2-beacon.example.net,c2,test_data
+evil-download.test.local,malware,test_data
+fake-bank-login.xyz,phishing,test_data
+credential-harvest.test,credential_theft,test_data

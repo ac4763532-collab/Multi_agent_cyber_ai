@@ -1,0 +1,42 @@
+# Port Scan Detection
+# Detects indicators of network port scanning activity
+id: sigma_port_scan_detection
+title: Network Port Scan Detected
+status: stable
+description: Detects network port scanning activity based on Suricata/IDS alerts or traffic patterns
+author: Multi-Agent Cyber AI
+date: 2026/09/01
+level: medium
+
+logsource:
+    product: suricata
+    category: network
+
+detection:
+    selection_scan_keywords:
+        raw_string|contains:
+            - port scan
+            - portscan
+            - ET SCAN
+            - nmap
+            - masscan
+    selection_event_type:
+        event_type|contains:
+            - network_ids_alert
+            - port_scan
+            - reconnaissance
+    selection_metadata:
+        metadata.category|contains:
+            - scan
+            - recon
+    condition: selection_scan_keywords or selection_event_type or selection_metadata
+
+tags:
+    - attack.t1046
+    - attack.discovery
+    - reconnaissance
+    - port-scan
+    - network
+
+references:
+    - https://attack.mitre.org/techniques/T1046/

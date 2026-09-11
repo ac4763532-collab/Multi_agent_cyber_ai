@@ -1,0 +1,16 @@
+# Hash Blocklist - Test/Demo Data Only
+# Format: hash,malware_family,source
+# Supports MD5 (32 chars), SHA1 (40 chars), SHA256 (64 chars)
+# Lines starting with # are comments
+#
+# WARNING: These are example hashes for testing purposes only.
+# Replace with real malware signature feeds in production.
+
+# EICAR Test File Hashes (standard antivirus test file)
+44d88612fea8a8f36de82e1278abb02f,eicar_test,av_test
+3395856ce81f2b7382dee72602f798b642f14140,eicar_test,av_test
+275a021bbfb6489e54d471899f7db9d1663fc695ec2fe2a2c4538aabf651fd0f,eicar_test,av_test
+
+# Empty file hash (sometimes flagged in suspicious contexts)
+d41d8cd98f00b204e9800998ecf8427e,suspicious_empty,test_data
+e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855,suspicious_empty,test_data

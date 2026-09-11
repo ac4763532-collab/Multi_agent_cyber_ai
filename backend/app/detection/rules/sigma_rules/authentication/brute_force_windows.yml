@@ -1,0 +1,41 @@
+# Windows Brute Force Detection
+# Detects Windows logon failures (Event ID 4625)
+id: sigma_brute_force_windows
+title: Windows Logon Failure - Brute Force Indicator
+status: stable
+description: Detects Windows authentication failures that may indicate brute force attacks
+author: Multi-Agent Cyber AI
+date: 2026/09/01
+level: high
+
+logsource:
+    product: windows
+    service: security
+    category: authentication
+
+detection:
+    selection_event:
+        event_type|contains:
+            - user_logon_failed
+            - logon_failure
+            - 4625
+    selection_status:
+        status:
+            - failure
+            - failed
+        action:
+            - denied
+            - blocked
+    condition: selection_event or selection_status
+
+tags:
+    - attack.t1110
+    - attack.t1110.003
+    - attack.credential-access
+    - brute-force
+    - windows
+    - authentication
+
+references:
+    - https://attack.mitre.org/techniques/T1110/003/
+    - https://docs.microsoft.com/en-us/windows/security/threat-protection/auditing/event-4625

@@ -95,6 +95,35 @@ class Settings(BaseSettings):
     max_agent_concurrency: int = 12
     anomaly_zscore_threshold: float = 3.0
 
+    # Agent Framework
+    agent_task_timeout_sec: int = 300
+    agent_max_retries: int = 3
+    agent_retry_delay_sec: float = 1.0
+    agent_result_ttl_sec: int = 86400
+
+    # Email Verification Agent
+    email_max_body_size_kb: int = 1024
+    email_max_urls_extract: int = 100
+    email_suspicious_tlds: list[str] = Field(
+        default_factory=lambda: [".tk", ".ml", ".ga", ".cf", ".gq", ".xyz", ".top", ".click"]
+    )
+
+    # Log Analyzer Agent
+    log_brute_force_threshold: int = 5
+    log_brute_force_window_sec: int = 60
+    log_rate_limit_threshold: int = 100
+    log_rate_limit_window_sec: int = 60
+    log_business_hours_start: int = 8
+    log_business_hours_end: int = 18
+
+    # Detection Engine (Layer 1)
+    detection_enabled: bool = True
+    detection_timeout_ms: float = 5.0
+    detection_sigma_rules_path: str | None = None
+    detection_ioc_path: str | None = None
+    detection_load_builtin_regex: bool = True
+    detection_max_rules: int = 1000
+
     # Network Scanning Boundary Constraints (Strict RFC1918 + Loopback)
     allowed_scan_ranges: list[str] = Field(
         default_factory=lambda: [

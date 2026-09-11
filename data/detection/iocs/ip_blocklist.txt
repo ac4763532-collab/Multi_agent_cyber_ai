@@ -1,0 +1,17 @@
+# IP Blocklist - Test/Demo Data Only
+# Format: IP,category,source
+# Lines starting with # are comments
+#
+# WARNING: These are example IPs for testing purposes only.
+# Replace with real threat intelligence feeds in production.
+
+# TEST-NET ranges (RFC 5737) - Safe for testing
+203.0.113.100,c2_server,test_data
+203.0.113.200,malware_distribution,test_data
+198.51.100.100,scanner,test_data
+198.51.100.200,brute_force,test_data
+192.0.2.100,phishing,test_data
+192.0.2.200,spam,test_data
+
+# Example scanner IPs
+45.33.32.156,scanner,nmap_scanme

@@ -15,6 +15,7 @@ from sqlalchemy.ext.asyncio import (
 
 from backend.app.config.settings import get_settings
 from backend.app.core.logging import get_logger
+from backend.app.database.base import Base
 
 logger = get_logger("cyber_ai.database")
 
@@ -60,6 +61,14 @@ def get_session_maker() -> async_sessionmaker[AsyncSession]:
             autoflush=False,
         )
     return _session_maker
+async def init_db() -> None:
+    """Create database tables that do not already exist."""
+    engine = get_engine()
+
+    async with engine.begin() as conn:
+        await conn.run_sync(Base.metadata.create_all)
+
+    logger.info("Database tables initialized successfully")
 
 
 async def get_db() -> AsyncGenerator[AsyncSession, None]:

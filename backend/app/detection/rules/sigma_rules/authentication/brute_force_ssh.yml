@@ -1,0 +1,43 @@
+# Brute Force SSH Detection
+# Detects multiple failed SSH authentication attempts
+id: sigma_brute_force_ssh
+title: SSH Brute Force Attack Indicator
+status: stable
+description: Detects indicators of SSH brute force attacks based on failed authentication patterns
+author: Multi-Agent Cyber AI
+date: 2026/09/01
+level: high
+
+logsource:
+    product: linux
+    service: sshd
+    category: authentication
+
+detection:
+    selection:
+        event_type|contains:
+            - auth_failed
+            - user_login_failed
+            - failed_password
+        action:
+            - denied
+            - blocked
+            - failed
+    selection_ssh:
+        protocol|contains:
+            - ssh
+            - sshd
+        source|contains:
+            - sshd
+            - auth
+    condition: selection or selection_ssh
+
+tags:
+    - attack.t1110
+    - attack.t1110.001
+    - attack.credential-access
+    - brute-force
+    - authentication
+
+references:
+    - https://attack.mitre.org/techniques/T1110/001/
