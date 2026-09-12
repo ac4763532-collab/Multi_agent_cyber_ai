@@ -164,7 +164,9 @@ class CrossDomainCorrelationEngine:
 
         return groups
 
-    def _correlate_group(self, findings: list[Finding]) -> CorrelationResult | None:
+    def _correlate_group(  # noqa: C901
+        self, findings: list[Finding]
+    ) -> CorrelationResult | None:
         """Correlate a group of findings."""
         result = CorrelationResult(
             finding_ids=[f.finding_id for f in findings],
@@ -216,17 +218,18 @@ class CrossDomainCorrelationEngine:
             )
 
         # Check temporal proximity
-        time_diff = (result.time_window_end - result.time_window_start).total_seconds()
-        if time_diff < 300:  # 5 minutes
-            proximity_score = 1.0 - (time_diff / 300)
-            components.append(
-                CorrelationScoreComponent(
-                    signal=CorrelationSignal.TEMPORAL_PROXIMITY,
-                    weight=SIGNAL_WEIGHTS[CorrelationSignal.TEMPORAL_PROXIMITY],
-                    score=proximity_score,
-                    evidence=f"Events within {int(time_diff)} seconds",
+        if result.time_window_end is not None and result.time_window_start is not None:
+            time_diff = (result.time_window_end - result.time_window_start).total_seconds()
+            if time_diff < 300:  # 5 minutes
+                proximity_score = 1.0 - (time_diff / 300)
+                components.append(
+                    CorrelationScoreComponent(
+                        signal=CorrelationSignal.TEMPORAL_PROXIMITY,
+                        weight=SIGNAL_WEIGHTS[CorrelationSignal.TEMPORAL_PROXIMITY],
+                        score=proximity_score,
+                        evidence=f"Events within {int(time_diff)} seconds",
+                    )
                 )
-            )
 
         # Check compatible threats
         threat_types = [f.finding_type for f in findings]

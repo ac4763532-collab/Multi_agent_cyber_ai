@@ -1,5 +1,6 @@
 """Task routing logic for dispatching events to appropriate agents."""
 
+from collections.abc import Callable
 from typing import Any
 
 from backend.app.agents.exceptions import TaskRoutingError
@@ -21,7 +22,7 @@ class RoutingRule:
         source_types: list[str] | None = None,
         event_types: list[str] | None = None,
         required_fields: list[str] | None = None,
-        condition: callable | None = None,
+        condition: Callable[[SecurityEvent], bool] | None = None,
     ) -> None:
         """Initialize routing rule.
 

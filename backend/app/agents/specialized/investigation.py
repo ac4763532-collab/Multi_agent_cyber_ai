@@ -107,7 +107,7 @@ class InvestigationFinding(BaseFinding):
     investigation_id: str
     status: InvestigationStatus = InvestigationStatus.OPEN
     timeline: list[TimelineEntry] = Field(default_factory=list)
-    evidence: list[Evidence] = Field(default_factory=list)
+    collected_evidence: list[Evidence] = Field(default_factory=list)
     affected_assets: list[AffectedAsset] = Field(default_factory=list)
     summary: InvestigationSummary = Field(default_factory=InvestigationSummary)
     related_findings: list[str] = Field(default_factory=list)
@@ -210,7 +210,7 @@ class InvestigationAgent(BaseAgent):
                 investigation_id=investigation_id,
                 status=InvestigationStatus.IN_PROGRESS,
                 timeline=timeline,
-                evidence=evidence,
+                collected_evidence=evidence,
                 affected_assets=affected_assets,
                 summary=summary,
                 related_findings=[f.get("finding_id", "") for f in findings if isinstance(f, dict)],
@@ -482,7 +482,7 @@ class InvestigationAgent(BaseAgent):
 
         # Analyze event types
         event_types = [t.event_type for t in timeline]
-        type_counts = defaultdict(int)
+        type_counts: dict[str, int] = defaultdict(int)
         for et in event_types:
             type_counts[et] += 1
 

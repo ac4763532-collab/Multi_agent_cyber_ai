@@ -235,8 +235,9 @@ class AIInvestigationEngine:
         # Apply template if specified
         if template and template in INVESTIGATION_TEMPLATES:
             tmpl = INVESTIGATION_TEMPLATES[template]
-            investigation.title = tmpl["title"]
-            for i, step_desc in enumerate(tmpl["steps"], 1):
+            investigation.title = str(tmpl["title"])
+            steps_list: list[str] = tmpl["steps"]  # type: ignore[assignment]
+            for i, step_desc in enumerate(steps_list, 1):
                 investigation.steps.append(
                     InvestigationStep(
                         step_number=i,
@@ -244,7 +245,8 @@ class AIInvestigationEngine:
                         reasoning=f"Standard step for {template} investigation",
                     )
                 )
-            for hyp_stmt in tmpl["hypotheses"]:
+            hyp_list: list[str] = tmpl["hypotheses"]  # type: ignore[assignment]
+            for hyp_stmt in hyp_list:
                 investigation.hypotheses.append(Hypothesis(statement=hyp_stmt))
 
         self._investigations[investigation.investigation_id] = investigation

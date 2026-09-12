@@ -284,7 +284,14 @@ class TaskDispatcherAgent(BaseAgent):
         )
 
         # Track task
-        await self._tracker.create_task(task)
+        await self._tracker.create_task(
+            event_id=task.event_id,
+            agent_type=task.agent_type,
+            priority=task.priority,
+            max_retries=task.max_retries,
+            payload=task.payload,
+            metadata=task.metadata,
+        )
 
         # Publish to broker
         await self._publish_task(task)

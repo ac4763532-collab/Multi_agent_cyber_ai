@@ -83,19 +83,19 @@ class MockThreatIntelProvider(ThreatIntelProvider):
     """Mock provider for testing."""
 
     # Known malicious indicators for testing
-    MALICIOUS_IPS = {
+    MALICIOUS_IPS: dict[str, dict[str, Any]] = {
         "185.220.101.1": {"reputation": "malicious", "tags": ["tor_exit", "scanner"]},
         "45.33.32.156": {"reputation": "malicious", "tags": ["c2", "emotet"]},
         "192.168.1.1": {"reputation": "benign", "tags": ["private"]},
     }
 
-    MALICIOUS_DOMAINS = {
+    MALICIOUS_DOMAINS: dict[str, dict[str, Any]] = {
         "evil.com": {"reputation": "malicious", "tags": ["phishing", "malware"]},
         "malware-c2.tk": {"reputation": "malicious", "tags": ["c2", "apt"]},
         "suspicious-login.ml": {"reputation": "suspicious", "tags": ["phishing"]},
     }
 
-    MALICIOUS_HASHES = {
+    MALICIOUS_HASHES: dict[str, dict[str, Any]] = {
         "44d88612fea8a8f36de82e1278abb02f": {
             "reputation": "malicious",
             "malware": ["eicar_test"],
@@ -125,8 +125,8 @@ class MockThreatIntelProvider(ThreatIntelProvider):
         if indicator_type == IndicatorType.IP:
             if indicator in self.MALICIOUS_IPS:
                 data = self.MALICIOUS_IPS[indicator]
-                result.reputation = ThreatReputation(data["reputation"])
-                result.tags = data.get("tags", [])
+                result.reputation = ThreatReputation(str(data["reputation"]))
+                result.tags = list(data.get("tags", []))
                 result.confidence = 0.9
                 result.first_seen = utc_now() - timedelta(days=30)
                 result.last_seen = utc_now() - timedelta(hours=1)
@@ -134,8 +134,8 @@ class MockThreatIntelProvider(ThreatIntelProvider):
         elif indicator_type == IndicatorType.DOMAIN:
             if indicator_lower in self.MALICIOUS_DOMAINS:
                 data = self.MALICIOUS_DOMAINS[indicator_lower]
-                result.reputation = ThreatReputation(data["reputation"])
-                result.tags = data.get("tags", [])
+                result.reputation = ThreatReputation(str(data["reputation"]))
+                result.tags = list(data.get("tags", []))
                 result.confidence = 0.85
                 result.first_seen = utc_now() - timedelta(days=14)
                 result.last_seen = utc_now() - timedelta(hours=6)
@@ -147,8 +147,8 @@ class MockThreatIntelProvider(ThreatIntelProvider):
         ):
             if indicator_lower in self.MALICIOUS_HASHES:
                 data = self.MALICIOUS_HASHES[indicator_lower]
-                result.reputation = ThreatReputation(data["reputation"])
-                result.malware_families = data.get("malware", [])
+                result.reputation = ThreatReputation(str(data["reputation"]))
+                result.malware_families = list(data.get("malware", []))
                 result.confidence = 0.95
                 result.first_seen = utc_now() - timedelta(days=60)
                 result.last_seen = utc_now() - timedelta(days=1)

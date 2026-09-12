@@ -267,7 +267,7 @@ class AlertManager:
 
         return alerts[offset : offset + limit]
 
-    def get_alert_counts(self) -> dict[str, int]:
+    def get_alert_counts(self) -> dict[str, int | dict[str, int]]:
         """Get alert counts by severity and status."""
         by_severity: dict[str, int] = {}
         by_status: dict[str, int] = {}

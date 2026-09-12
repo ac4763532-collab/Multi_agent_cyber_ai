@@ -342,7 +342,7 @@ class NetworkThreatAgent(BaseAgent):
 
     def _detect_port_scan(self, data: dict[str, Any]) -> list[NetworkIndicator]:
         """Detect port scanning activity."""
-        indicators = []
+        indicators: list[NetworkIndicator] = []
 
         source_ip = data.get("source_ip", "")
         dest_ip = data.get("destination_ip", "")
@@ -382,7 +382,7 @@ class NetworkThreatAgent(BaseAgent):
 
     def _detect_exfiltration(self, data: dict[str, Any]) -> list[NetworkIndicator]:
         """Detect data exfiltration attempts."""
-        indicators = []
+        indicators: list[NetworkIndicator] = []
 
         source_ip = data.get("source_ip", "")
         dest_ip = data.get("destination_ip", "")
@@ -427,7 +427,7 @@ class NetworkThreatAgent(BaseAgent):
 
     def _detect_dns_tunneling(self, data: dict[str, Any]) -> list[NetworkIndicator]:
         """Detect DNS tunneling attempts."""
-        indicators = []
+        indicators: list[NetworkIndicator] = []
 
         query = data.get("dns_query", data.get("query", ""))
         if not query:
@@ -475,7 +475,7 @@ class NetworkThreatAgent(BaseAgent):
 
     def _detect_beaconing(self, data: dict[str, Any]) -> list[NetworkIndicator]:
         """Detect beaconing behavior (regular interval connections)."""
-        indicators = []
+        indicators: list[NetworkIndicator] = []
 
         source_ip = data.get("source_ip", "")
         dest_ip = data.get("destination_ip", "")
@@ -676,7 +676,8 @@ class NetworkThreatAgent(BaseAgent):
             NetworkThreatType.BEACONING: (["T1071"], ["command-and-control"]),
         }
 
-        techniques, tactics = [], []
+        techniques: list[str] = []
+        tactics: list[str] = []
         if threat_type and threat_type in mitre_map:
             techniques, tactics = mitre_map[threat_type]
 

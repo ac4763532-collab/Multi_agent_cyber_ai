@@ -94,19 +94,19 @@ class ThreatIntelFinding(BaseFinding):
 
 
 # Sample threat intelligence database (in production, use real feeds)
-KNOWN_MALICIOUS_IPS = {
+KNOWN_MALICIOUS_IPS: dict[str, dict[str, Any]] = {
     "185.220.101.1": {"category": ThreatCategory.C2, "confidence": 0.95},
     "45.33.32.156": {"category": ThreatCategory.MALWARE, "confidence": 0.8},
     "198.51.100.1": {"category": ThreatCategory.BOTNET, "confidence": 0.9},
 }
 
-KNOWN_MALICIOUS_DOMAINS = {
+KNOWN_MALICIOUS_DOMAINS: dict[str, dict[str, Any]] = {
     "malware-c2.com": {"category": ThreatCategory.C2, "confidence": 0.95},
     "phishing-site.net": {"category": ThreatCategory.PHISHING, "confidence": 0.9},
     "ransomware-payment.org": {"category": ThreatCategory.RANSOMWARE, "confidence": 0.95},
 }
 
-KNOWN_MALICIOUS_HASHES = {
+KNOWN_MALICIOUS_HASHES: dict[str, dict[str, Any]] = {
     "44d88612fea8a8f36de82e1278abb02f": {  # EICAR test file
         "category": ThreatCategory.MALWARE,
         "malware_family": "EICAR-Test",
@@ -379,19 +379,23 @@ class ThreatIntelligenceAgent(BaseAgent):
         if "event" in payload:
             event = payload["event"]
             if isinstance(event, dict):
-                for field, ioc_type in [
+                field_type_map: list[tuple[str, IoC_Type | None]] = [
                     ("source_ip", IoC_Type.IP_ADDRESS),
                     ("destination_ip", IoC_Type.IP_ADDRESS),
                     ("domain", IoC_Type.DOMAIN),
                     ("url", IoC_Type.URL),
                     ("hash", None),
-                ]:
+                ]
+                for field, field_ioc_type in field_type_map:
                     if field in event and event[field] and event[field] not in seen:
                         value = event[field]
                         seen.add(value)
-                        if ioc_type is None:
-                            ioc_type = self._detect_hash_type(value)
-                        iocs.append((value, ioc_type))
+                        resolved_type = (
+                            field_ioc_type
+                            if field_ioc_type is not None
+                            else self._detect_hash_type(value)
+                        )
+                        iocs.append((value, resolved_type))
 
         return iocs
 

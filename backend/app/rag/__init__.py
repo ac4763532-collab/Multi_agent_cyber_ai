@@ -137,7 +137,8 @@ class FAISSIndex:
         embedding = np.array(chunk.embedding, dtype=np.float32)
 
         if self.use_faiss:
-            self.index.add(embedding.reshape(1, -1))
+            if self.index is not None:
+                self.index.add(embedding.reshape(1, -1))
         else:
             self._vectors.append(embedding)
 
@@ -155,7 +156,7 @@ class FAISSIndex:
 
         query = np.array(query_embedding, dtype=np.float32).reshape(1, -1)
 
-        if self.use_faiss:
+        if self.use_faiss and self.index is not None:
             scores, indices = self.index.search(query, min(top_k, len(self.chunks)))
             return [
                 (int(idx), float(score))
@@ -389,15 +390,17 @@ Mitigations: {", ".join(technique["mitigations"])}
 
         # Add playbooks
         for playbook in playbooks:
+            playbook_name = str(playbook["name"])
+            playbook_steps: list[str] = playbook["steps"]  # type: ignore[assignment]
             content = f"""
-Incident Response Playbook: {playbook["name"]}
+Incident Response Playbook: {playbook_name}
 Steps:
-{chr(10).join(f"{i + 1}. {step}" for i, step in enumerate(playbook["steps"]))}
+{chr(10).join(f"{i + 1}. {step}" for i, step in enumerate(playbook_steps))}
             """.strip()
 
             chunk = self._create_chunk(
                 content=content,
-                source=f"playbook_{playbook['name'].lower().replace(' ', '_')}",
+                source=f"playbook_{playbook_name.lower().replace(' ', '_')}",
                 source_type="playbook",
                 metadata=playbook,
             )

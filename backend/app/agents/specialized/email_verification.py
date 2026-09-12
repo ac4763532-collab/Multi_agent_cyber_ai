@@ -339,7 +339,9 @@ class EmailVerificationAgent(BaseAgent):
 
         # Raw EML content
         if "eml" in payload or "raw_email" in payload:
-            return self._parse_eml(payload.get("eml") or payload.get("raw_email"))
+            eml_content = payload.get("eml") or payload.get("raw_email")
+            if eml_content:
+                return self._parse_eml(str(eml_content))
 
         # Event with email data
         if "event" in payload:
@@ -480,11 +482,11 @@ class EmailVerificationAgent(BaseAgent):
 
     def _extract_attachments(self, attachments_data: list[Any]) -> list[AttachmentMetadata]:
         """Extract attachment metadata."""
-        attachments = []
+        attachments: list[AttachmentMetadata] = []
 
         for att in attachments_data:
             if isinstance(att, dict):
-                filename = att.get("filename", att.get("name", ""))
+                filename = att.get("filename", att.get("name", "")) or ""
                 ext = "." + filename.rsplit(".", 1)[-1].lower() if "." in filename else ""
 
                 attachments.append(
