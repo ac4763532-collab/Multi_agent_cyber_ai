@@ -45,7 +45,10 @@ class TestCrossDomainCorrelationEngine:
                 timestamp=now + timedelta(minutes=5),
                 severity="high",
                 confidence=0.85,
-                indicators={"source_ip": "192.168.1.100", "username": "victim@corp.com"},
+                indicators={
+                    "source_ip": "192.168.1.100",
+                    "username": "victim@corp.com",
+                },
             ),
         ]
 
@@ -107,14 +110,13 @@ class TestCrossDomainCorrelationEngine:
 
         # Check for temporal proximity component
         temporal_components = [
-            c for c in results[0].score_components
+            c
+            for c in results[0].score_components
             if c.signal == CorrelationSignal.TEMPORAL_PROXIMITY
         ]
         assert len(temporal_components) > 0
 
-    def test_attack_chain_detection(
-        self, engine: CrossDomainCorrelationEngine
-    ) -> None:
+    def test_attack_chain_detection(self, engine: CrossDomainCorrelationEngine) -> None:
         """Test attack chain stage detection."""
         now = utc_now()
         # Use multiple shared indicators to ensure correlation score meets threshold
@@ -124,14 +126,22 @@ class TestCrossDomainCorrelationEngine:
                 finding_type="phishing_email",
                 source="email",
                 timestamp=now,
-                indicators={"source_ip": "1.2.3.4", "domain": "evil.com", "user": "victim"},
+                indicators={
+                    "source_ip": "1.2.3.4",
+                    "domain": "evil.com",
+                    "user": "victim",
+                },
             ),
             Finding(
                 finding_id="f2",
                 finding_type="brute_force_login",
                 source="auth",
                 timestamp=now + timedelta(minutes=2),
-                indicators={"source_ip": "1.2.3.4", "domain": "evil.com", "user": "victim"},
+                indicators={
+                    "source_ip": "1.2.3.4",
+                    "domain": "evil.com",
+                    "user": "victim",
+                },
             ),
         ]
 
@@ -140,12 +150,12 @@ class TestCrossDomainCorrelationEngine:
 
         attack_chain = results[0].attack_chain
         # Should detect initial access and credential activity stages
-        assert AttackChainStage.INITIAL_ACCESS in attack_chain or \
-               AttackChainStage.CREDENTIAL_ACTIVITY in attack_chain
+        assert (
+            AttackChainStage.INITIAL_ACCESS in attack_chain
+            or AttackChainStage.CREDENTIAL_ACTIVITY in attack_chain
+        )
 
-    def test_severity_aggregation(
-        self, engine: CrossDomainCorrelationEngine
-    ) -> None:
+    def test_severity_aggregation(self, engine: CrossDomainCorrelationEngine) -> None:
         """Correlation severity should be highest of findings."""
         now = utc_now()
         findings = [
@@ -202,9 +212,7 @@ class TestCrossDomainCorrelationEngine:
         assert "total_correlations" in metrics
         assert metrics["total_correlations"] >= 1
 
-    def test_classification(
-        self, engine: CrossDomainCorrelationEngine
-    ) -> None:
+    def test_classification(self, engine: CrossDomainCorrelationEngine) -> None:
         """Test correlation classification."""
         now = utc_now()
         findings = [
@@ -235,6 +243,7 @@ class TestCorrelationEngineSingleton:
     def test_singleton_returns_same_instance(self) -> None:
         """Singleton should return same instance."""
         import backend.app.correlation as correlation_module
+
         correlation_module._engine = None
 
         e1 = get_correlation_engine()

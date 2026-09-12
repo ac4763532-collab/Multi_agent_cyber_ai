@@ -58,9 +58,7 @@ class NetworkThreatConfig(BaseModel):
     exfil_threshold_bytes: int = Field(
         default=10_000_000, ge=1_000_000, description="Bytes threshold for exfil alert"
     )
-    exfil_window_sec: int = Field(
-        default=300, ge=60, description="Time window for exfil detection"
-    )
+    exfil_window_sec: int = Field(default=300, ge=60, description="Time window for exfil detection")
 
     # DNS tunneling
     dns_query_length_threshold: int = Field(
@@ -298,41 +296,47 @@ class NetworkThreatAgent(BaseAgent):
 
         # Check for known C2 ports with encrypted traffic
         if dest_port in C2_PORTS and protocol in ("tcp", "https", "ssl"):
-            indicators.append(NetworkIndicator(
-                indicator_type=NetworkThreatType.C2_COMMUNICATION,
-                description=f"Connection to known C2 port {dest_port}",
-                severity=EventSeverity.HIGH,
-                confidence=MatchConfidence.MEDIUM,
-                destination_ip=dest_ip,
-                destination_port=dest_port,
-                protocol=protocol,
-                evidence={"port": dest_port, "reason": "known_c2_port"},
-                risk_contribution=0.3,
-            ))
+            indicators.append(
+                NetworkIndicator(
+                    indicator_type=NetworkThreatType.C2_COMMUNICATION,
+                    description=f"Connection to known C2 port {dest_port}",
+                    severity=EventSeverity.HIGH,
+                    confidence=MatchConfidence.MEDIUM,
+                    destination_ip=dest_ip,
+                    destination_port=dest_port,
+                    protocol=protocol,
+                    evidence={"port": dest_port, "reason": "known_c2_port"},
+                    risk_contribution=0.3,
+                )
+            )
 
         # Check for suspicious user agents
         if user_agent and any(ua in user_agent for ua in C2_USER_AGENTS):
-            indicators.append(NetworkIndicator(
-                indicator_type=NetworkThreatType.C2_COMMUNICATION,
-                description="Suspicious user agent detected",
-                severity=EventSeverity.MEDIUM,
-                confidence=MatchConfidence.MEDIUM,
-                destination_ip=dest_ip,
-                evidence={"user_agent": user_agent[:100]},
-                risk_contribution=0.2,
-            ))
+            indicators.append(
+                NetworkIndicator(
+                    indicator_type=NetworkThreatType.C2_COMMUNICATION,
+                    description="Suspicious user agent detected",
+                    severity=EventSeverity.MEDIUM,
+                    confidence=MatchConfidence.MEDIUM,
+                    destination_ip=dest_ip,
+                    evidence={"user_agent": user_agent[:100]},
+                    risk_contribution=0.2,
+                )
+            )
 
         # Check for suspicious TLDs
         if domain and any(domain.endswith(tld) for tld in SUSPICIOUS_TLDS):
-            indicators.append(NetworkIndicator(
-                indicator_type=NetworkThreatType.C2_COMMUNICATION,
-                description="Connection to suspicious TLD",
-                severity=EventSeverity.MEDIUM,
-                confidence=MatchConfidence.MEDIUM,
-                destination_ip=dest_ip,
-                evidence={"domain": domain},
-                risk_contribution=0.25,
-            ))
+            indicators.append(
+                NetworkIndicator(
+                    indicator_type=NetworkThreatType.C2_COMMUNICATION,
+                    description="Connection to suspicious TLD",
+                    severity=EventSeverity.MEDIUM,
+                    confidence=MatchConfidence.MEDIUM,
+                    destination_ip=dest_ip,
+                    evidence={"domain": domain},
+                    risk_contribution=0.25,
+                )
+            )
 
         return indicators
 
@@ -357,20 +361,22 @@ class NetworkThreatAgent(BaseAgent):
         # Check threshold
         unique_ports = len(self._port_scan_tracker[key]["ports"])
         if unique_ports >= self.config.port_scan_threshold:
-            indicators.append(NetworkIndicator(
-                indicator_type=NetworkThreatType.PORT_SCAN,
-                description=f"Port scan detected: {unique_ports} unique ports",
-                severity=EventSeverity.MEDIUM,
-                confidence=MatchConfidence.HIGH,
-                source_ip=source_ip,
-                destination_ip=dest_ip,
-                evidence={
-                    "unique_ports": unique_ports,
-                    "threshold": self.config.port_scan_threshold,
-                    "ports_sample": list(self._port_scan_tracker[key]["ports"])[:10],
-                },
-                risk_contribution=0.25,
-            ))
+            indicators.append(
+                NetworkIndicator(
+                    indicator_type=NetworkThreatType.PORT_SCAN,
+                    description=f"Port scan detected: {unique_ports} unique ports",
+                    severity=EventSeverity.MEDIUM,
+                    confidence=MatchConfidence.HIGH,
+                    source_ip=source_ip,
+                    destination_ip=dest_ip,
+                    evidence={
+                        "unique_ports": unique_ports,
+                        "threshold": self.config.port_scan_threshold,
+                        "ports_sample": list(self._port_scan_tracker[key]["ports"])[:10],
+                    },
+                    risk_contribution=0.25,
+                )
+            )
 
         return indicators
 
@@ -401,19 +407,21 @@ class NetworkThreatAgent(BaseAgent):
             self._data_transfer[key] += bytes_out
 
             if self._data_transfer[key] >= self.config.exfil_threshold_bytes:
-                indicators.append(NetworkIndicator(
-                    indicator_type=NetworkThreatType.DATA_EXFILTRATION,
-                    description="Large data transfer to external destination",
-                    severity=EventSeverity.HIGH,
-                    confidence=MatchConfidence.MEDIUM,
-                    source_ip=source_ip,
-                    destination_ip=dest_ip,
-                    evidence={
-                        "bytes_transferred": self._data_transfer[key],
-                        "threshold": self.config.exfil_threshold_bytes,
-                    },
-                    risk_contribution=0.35,
-                ))
+                indicators.append(
+                    NetworkIndicator(
+                        indicator_type=NetworkThreatType.DATA_EXFILTRATION,
+                        description="Large data transfer to external destination",
+                        severity=EventSeverity.HIGH,
+                        confidence=MatchConfidence.MEDIUM,
+                        source_ip=source_ip,
+                        destination_ip=dest_ip,
+                        evidence={
+                            "bytes_transferred": self._data_transfer[key],
+                            "threshold": self.config.exfil_threshold_bytes,
+                        },
+                        risk_contribution=0.35,
+                    )
+                )
 
         return indicators
 
@@ -430,34 +438,38 @@ class NetworkThreatAgent(BaseAgent):
         if len(parts) > 2:
             subdomain = ".".join(parts[:-2])
             if len(subdomain) > self.config.dns_query_length_threshold:
-                indicators.append(NetworkIndicator(
-                    indicator_type=NetworkThreatType.DNS_TUNNELING,
-                    description="Unusually long DNS subdomain (possible tunneling)",
-                    severity=EventSeverity.HIGH,
-                    confidence=MatchConfidence.MEDIUM,
-                    evidence={
-                        "query": query[:100],
-                        "subdomain_length": len(subdomain),
-                        "threshold": self.config.dns_query_length_threshold,
-                    },
-                    risk_contribution=0.3,
-                ))
+                indicators.append(
+                    NetworkIndicator(
+                        indicator_type=NetworkThreatType.DNS_TUNNELING,
+                        description="Unusually long DNS subdomain (possible tunneling)",
+                        severity=EventSeverity.HIGH,
+                        confidence=MatchConfidence.MEDIUM,
+                        evidence={
+                            "query": query[:100],
+                            "subdomain_length": len(subdomain),
+                            "threshold": self.config.dns_query_length_threshold,
+                        },
+                        risk_contribution=0.3,
+                    )
+                )
 
         # Check entropy
         entropy = self._calculate_entropy(query)
         if entropy > self.config.dns_entropy_threshold:
-            indicators.append(NetworkIndicator(
-                indicator_type=NetworkThreatType.DNS_TUNNELING,
-                description="High entropy DNS query (possible tunneling)",
-                severity=EventSeverity.MEDIUM,
-                confidence=MatchConfidence.MEDIUM,
-                evidence={
-                    "query": query[:100],
-                    "entropy": round(entropy, 2),
-                    "threshold": self.config.dns_entropy_threshold,
-                },
-                risk_contribution=0.25,
-            ))
+            indicators.append(
+                NetworkIndicator(
+                    indicator_type=NetworkThreatType.DNS_TUNNELING,
+                    description="High entropy DNS query (possible tunneling)",
+                    severity=EventSeverity.MEDIUM,
+                    confidence=MatchConfidence.MEDIUM,
+                    evidence={
+                        "query": query[:100],
+                        "entropy": round(entropy, 2),
+                        "threshold": self.config.dns_entropy_threshold,
+                    },
+                    risk_contribution=0.25,
+                )
+            )
 
         return indicators
 
@@ -503,24 +515,26 @@ class NetworkThreatAgent(BaseAgent):
         avg_interval = sum(deltas) / len(deltas)
         if avg_interval > 0:
             variance = sum((d - avg_interval) ** 2 for d in deltas) / len(deltas)
-            std_dev = variance ** 0.5
+            std_dev = variance**0.5
             coefficient_of_variation = std_dev / avg_interval
 
             if coefficient_of_variation < self.config.beacon_interval_tolerance:
-                indicators.append(NetworkIndicator(
-                    indicator_type=NetworkThreatType.BEACONING,
-                    description="Regular interval connections detected (beaconing)",
-                    severity=EventSeverity.HIGH,
-                    confidence=MatchConfidence.HIGH,
-                    source_ip=source_ip,
-                    destination_ip=dest_ip,
-                    evidence={
-                        "avg_interval_sec": round(avg_interval, 2),
-                        "connection_count": len(intervals),
-                        "variance_coefficient": round(coefficient_of_variation, 3),
-                    },
-                    risk_contribution=0.4,
-                ))
+                indicators.append(
+                    NetworkIndicator(
+                        indicator_type=NetworkThreatType.BEACONING,
+                        description="Regular interval connections detected (beaconing)",
+                        severity=EventSeverity.HIGH,
+                        confidence=MatchConfidence.HIGH,
+                        source_ip=source_ip,
+                        destination_ip=dest_ip,
+                        evidence={
+                            "avg_interval_sec": round(avg_interval, 2),
+                            "connection_count": len(intervals),
+                            "variance_coefficient": round(coefficient_of_variation, 3),
+                        },
+                        risk_contribution=0.4,
+                    )
+                )
 
         return indicators
 
@@ -545,21 +559,23 @@ class NetworkThreatAgent(BaseAgent):
                 # Suspicious internal protocols
                 lateral_ports = {22, 23, 135, 139, 445, 3389, 5985, 5986}
                 if dest_port in lateral_ports:
-                    indicators.append(NetworkIndicator(
-                        indicator_type=NetworkThreatType.LATERAL_MOVEMENT,
-                        description=f"Internal connection on administrative port {dest_port}",
-                        severity=EventSeverity.MEDIUM,
-                        confidence=MatchConfidence.MEDIUM,
-                        source_ip=source_ip,
-                        destination_ip=dest_ip,
-                        destination_port=dest_port,
-                        protocol=protocol,
-                        evidence={
-                            "port": dest_port,
-                            "service": self._port_to_service(dest_port),
-                        },
-                        risk_contribution=0.2,
-                    ))
+                    indicators.append(
+                        NetworkIndicator(
+                            indicator_type=NetworkThreatType.LATERAL_MOVEMENT,
+                            description=f"Internal connection on administrative port {dest_port}",
+                            severity=EventSeverity.MEDIUM,
+                            confidence=MatchConfidence.MEDIUM,
+                            source_ip=source_ip,
+                            destination_ip=dest_ip,
+                            destination_port=dest_port,
+                            protocol=protocol,
+                            evidence={
+                                "port": dest_port,
+                                "service": self._port_to_service(dest_port),
+                            },
+                            risk_contribution=0.2,
+                        )
+                    )
 
         except ValueError:
             pass
@@ -621,9 +637,7 @@ class NetworkThreatAgent(BaseAgent):
             EventSeverity.LOW: 3,
         }
 
-        indicators.sort(
-            key=lambda x: (severity_order.get(x.severity, 4), -x.risk_contribution)
-        )
+        indicators.sort(key=lambda x: (severity_order.get(x.severity, 4), -x.risk_contribution))
         return indicators[0].indicator_type
 
     def _create_network_finding(
@@ -684,8 +698,7 @@ class NetworkThreatAgent(BaseAgent):
             bytes_transferred=data.get("bytes_out", 0) + data.get("bytes_in", 0),
             connection_count=1,
             explanation=(
-                f"Network threat detected: "
-                f"{threat_type.value if threat_type else 'anomaly'}"
+                f"Network threat detected: {threat_type.value if threat_type else 'anomaly'}"
             ),
             mitre_techniques=techniques,
             mitre_tactics=tactics,

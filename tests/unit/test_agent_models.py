@@ -22,7 +22,15 @@ class TestTaskStatus:
 
     def test_all_statuses_defined(self):
         """Verify all expected statuses exist."""
-        expected = {"queued", "validating", "running", "completed", "failed", "retrying", "dead_letter"}
+        expected = {
+            "queued",
+            "validating",
+            "running",
+            "completed",
+            "failed",
+            "retrying",
+            "dead_letter",
+        }
         actual = {s.value for s in TaskStatus}
         assert actual == expected
 
@@ -46,7 +54,9 @@ class TestTaskPriority:
 
     def test_from_severity_critical(self):
         """Critical severity maps to critical priority."""
-        assert TaskPriority.from_severity(EventSeverity.CRITICAL) == TaskPriority.CRITICAL
+        assert (
+            TaskPriority.from_severity(EventSeverity.CRITICAL) == TaskPriority.CRITICAL
+        )
 
     def test_from_severity_high(self):
         """High severity maps to high priority."""
@@ -62,7 +72,9 @@ class TestTaskPriority:
 
     def test_from_severity_informational(self):
         """Informational severity maps to low priority."""
-        assert TaskPriority.from_severity(EventSeverity.INFORMATIONAL) == TaskPriority.LOW
+        assert (
+            TaskPriority.from_severity(EventSeverity.INFORMATIONAL) == TaskPriority.LOW
+        )
 
 
 class TestAgentType:

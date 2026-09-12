@@ -26,8 +26,21 @@ SUSPICIOUS_TLDS = {".tk", ".ml", ".ga", ".cf", ".gq", ".xyz", ".top", ".work", "
 
 # Suspicious file extensions for attachments
 SUSPICIOUS_EXTENSIONS = {
-    ".exe", ".scr", ".js", ".vbs", ".bat", ".cmd", ".ps1", ".msi",
-    ".jar", ".hta", ".wsf", ".lnk", ".pif", ".reg", ".com",
+    ".exe",
+    ".scr",
+    ".js",
+    ".vbs",
+    ".bat",
+    ".cmd",
+    ".ps1",
+    ".msi",
+    ".jar",
+    ".hta",
+    ".wsf",
+    ".lnk",
+    ".pif",
+    ".reg",
+    ".com",
 }
 
 # Password-protected archive indicators
@@ -191,10 +204,7 @@ class EmailVerificationAgent(BaseAgent):
 
         # Must have email content or event with email data
         has_email = (
-            "email" in payload
-            or "eml" in payload
-            or "raw_email" in payload
-            or "event" in payload
+            "email" in payload or "eml" in payload or "raw_email" in payload or "event" in payload
         )
 
         return has_email
@@ -440,7 +450,7 @@ class EmailVerificationAgent(BaseAgent):
                 domain = parsed.netloc.lower()
 
                 # Check if IP-based
-                is_ip = bool(re.match(r'^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}', domain))
+                is_ip = bool(re.match(r"^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}", domain))
 
                 # Check TLD
                 has_suspicious_tld = any(domain.endswith(tld) for tld in SUSPICIOUS_TLDS)
@@ -452,14 +462,16 @@ class EmailVerificationAgent(BaseAgent):
                 shorteners = {"bit.ly", "t.co", "goo.gl", "tinyurl.com", "ow.ly", "is.gd"}
                 is_shortened = any(s in domain for s in shorteners)
 
-                urls.append(ExtractedURL(
-                    url=match,
-                    domain=domain,
-                    is_ip_based=is_ip,
-                    has_suspicious_tld=has_suspicious_tld,
-                    subdomain_count=subdomain_count,
-                    is_shortened=is_shortened,
-                ))
+                urls.append(
+                    ExtractedURL(
+                        url=match,
+                        domain=domain,
+                        is_ip_based=is_ip,
+                        has_suspicious_tld=has_suspicious_tld,
+                        subdomain_count=subdomain_count,
+                        is_shortened=is_shortened,
+                    )
+                )
             except Exception:  # noqa: S112
                 # Skip malformed URLs - parsing failures are expected for invalid input
                 continue
@@ -475,14 +487,16 @@ class EmailVerificationAgent(BaseAgent):
                 filename = att.get("filename", att.get("name", ""))
                 ext = "." + filename.rsplit(".", 1)[-1].lower() if "." in filename else ""
 
-                attachments.append(AttachmentMetadata(
-                    filename=filename,
-                    extension=ext,
-                    size_bytes=att.get("size", 0),
-                    content_type=att.get("content_type", ""),
-                    is_suspicious_type=ext in SUSPICIOUS_EXTENSIONS,
-                    is_archive=ext in ARCHIVE_EXTENSIONS,
-                ))
+                attachments.append(
+                    AttachmentMetadata(
+                        filename=filename,
+                        extension=ext,
+                        size_bytes=att.get("size", 0),
+                        content_type=att.get("content_type", ""),
+                        is_suspicious_type=ext in SUSPICIOUS_EXTENSIONS,
+                        is_archive=ext in ARCHIVE_EXTENSIONS,
+                    )
+                )
 
         return attachments
 
@@ -506,103 +520,128 @@ class EmailVerificationAgent(BaseAgent):
         # Check sender/reply-to mismatch
         if analysis.reply_to_domain and analysis.sender_domain:
             if analysis.reply_to_domain != analysis.sender_domain:
-                indicators.append(EmailIndicator(
-                    indicator_type="sender_mismatch",
-                    description="Reply-To domain differs from sender domain",
-                    severity=EventSeverity.MEDIUM,
-                    confidence=MatchConfidence.HIGH,
-                    evidence=(
-                        f"From: {analysis.sender_domain}, "
-                        f"Reply-To: {analysis.reply_to_domain}"
-                    ),
-                    risk_contribution=0.25,
-                ))
+                indicators.append(
+                    EmailIndicator(
+                        indicator_type="sender_mismatch",
+                        description="Reply-To domain differs from sender domain",
+                        severity=EventSeverity.MEDIUM,
+                        confidence=MatchConfidence.HIGH,
+                        evidence=(
+                            f"From: {analysis.sender_domain}, Reply-To: {analysis.reply_to_domain}"
+                        ),
+                        risk_contribution=0.25,
+                    )
+                )
 
         # Check authentication failures
         if analysis.spf_result == "fail":
-            indicators.append(EmailIndicator(
-                indicator_type="spf_fail",
-                description="SPF authentication failed",
-                severity=EventSeverity.MEDIUM,
-                confidence=MatchConfidence.HIGH,
-                evidence="SPF: fail",
-                risk_contribution=0.2,
-            ))
+            indicators.append(
+                EmailIndicator(
+                    indicator_type="spf_fail",
+                    description="SPF authentication failed",
+                    severity=EventSeverity.MEDIUM,
+                    confidence=MatchConfidence.HIGH,
+                    evidence="SPF: fail",
+                    risk_contribution=0.2,
+                )
+            )
 
         if analysis.dkim_result == "fail":
-            indicators.append(EmailIndicator(
-                indicator_type="dkim_fail",
-                description="DKIM signature verification failed",
-                severity=EventSeverity.MEDIUM,
-                confidence=MatchConfidence.HIGH,
-                evidence="DKIM: fail",
-                risk_contribution=0.2,
-            ))
+            indicators.append(
+                EmailIndicator(
+                    indicator_type="dkim_fail",
+                    description="DKIM signature verification failed",
+                    severity=EventSeverity.MEDIUM,
+                    confidence=MatchConfidence.HIGH,
+                    evidence="DKIM: fail",
+                    risk_contribution=0.2,
+                )
+            )
 
         # Check URLs
         for url in analysis.urls:
             if url.is_ip_based:
-                indicators.append(EmailIndicator(
-                    indicator_type="ip_based_url",
-                    description="URL uses IP address instead of domain",
-                    severity=EventSeverity.MEDIUM,
-                    confidence=MatchConfidence.HIGH,
-                    evidence=url.url[:100],
-                    risk_contribution=0.15,
-                ))
+                indicators.append(
+                    EmailIndicator(
+                        indicator_type="ip_based_url",
+                        description="URL uses IP address instead of domain",
+                        severity=EventSeverity.MEDIUM,
+                        confidence=MatchConfidence.HIGH,
+                        evidence=url.url[:100],
+                        risk_contribution=0.15,
+                    )
+                )
 
             if url.has_suspicious_tld:
-                indicators.append(EmailIndicator(
-                    indicator_type="suspicious_tld",
-                    description="URL uses suspicious top-level domain",
-                    severity=EventSeverity.LOW,
-                    confidence=MatchConfidence.MEDIUM,
-                    evidence=url.domain,
-                    risk_contribution=0.1,
-                ))
+                indicators.append(
+                    EmailIndicator(
+                        indicator_type="suspicious_tld",
+                        description="URL uses suspicious top-level domain",
+                        severity=EventSeverity.LOW,
+                        confidence=MatchConfidence.MEDIUM,
+                        evidence=url.domain,
+                        risk_contribution=0.1,
+                    )
+                )
 
             if url.subdomain_count > 3:
-                indicators.append(EmailIndicator(
-                    indicator_type="excessive_subdomains",
-                    description="URL has excessive subdomains",
-                    severity=EventSeverity.LOW,
-                    confidence=MatchConfidence.MEDIUM,
-                    evidence=url.domain,
-                    risk_contribution=0.1,
-                ))
+                indicators.append(
+                    EmailIndicator(
+                        indicator_type="excessive_subdomains",
+                        description="URL has excessive subdomains",
+                        severity=EventSeverity.LOW,
+                        confidence=MatchConfidence.MEDIUM,
+                        evidence=url.domain,
+                        risk_contribution=0.1,
+                    )
+                )
 
         # Check attachments
         for att in analysis.attachments:
             if att.is_suspicious_type:
-                indicators.append(EmailIndicator(
-                    indicator_type="suspicious_attachment",
-                    description=f"Suspicious attachment type: {att.extension}",
-                    severity=EventSeverity.HIGH,
-                    confidence=MatchConfidence.HIGH,
-                    evidence=att.filename,
-                    risk_contribution=0.3,
-                ))
+                indicators.append(
+                    EmailIndicator(
+                        indicator_type="suspicious_attachment",
+                        description=f"Suspicious attachment type: {att.extension}",
+                        severity=EventSeverity.HIGH,
+                        confidence=MatchConfidence.HIGH,
+                        evidence=att.filename,
+                        risk_contribution=0.3,
+                    )
+                )
 
         # Check for urgency language
         combined_text = f"{analysis.subject} {analysis.body_text}"
         self._check_pattern_indicators(
-            indicators, combined_text, URGENCY_PATTERNS,
-            "urgency_language", "Email contains urgency language",
-            EventSeverity.LOW, 0.1,
+            indicators,
+            combined_text,
+            URGENCY_PATTERNS,
+            "urgency_language",
+            "Email contains urgency language",
+            EventSeverity.LOW,
+            0.1,
         )
 
         # Check for credential requests
         self._check_pattern_indicators(
-            indicators, combined_text, CREDENTIAL_PATTERNS,
-            "credential_request", "Email requests credentials or login",
-            EventSeverity.MEDIUM, 0.2,
+            indicators,
+            combined_text,
+            CREDENTIAL_PATTERNS,
+            "credential_request",
+            "Email requests credentials or login",
+            EventSeverity.MEDIUM,
+            0.2,
         )
 
         # Check for financial indicators
         self._check_pattern_indicators(
-            indicators, combined_text, FINANCIAL_PATTERNS,
-            "financial_indicator", "Email contains financial/scam indicators",
-            EventSeverity.LOW, 0.1,
+            indicators,
+            combined_text,
+            FINANCIAL_PATTERNS,
+            "financial_indicator",
+            "Email contains financial/scam indicators",
+            EventSeverity.LOW,
+            0.1,
         )
 
         return indicators
@@ -621,14 +660,16 @@ class EmailVerificationAgent(BaseAgent):
         for pattern in patterns:
             match = re.search(pattern, text)
             if match:
-                indicators.append(EmailIndicator(
-                    indicator_type=indicator_type,
-                    description=description,
-                    severity=severity,
-                    confidence=MatchConfidence.MEDIUM,
-                    evidence=match.group(0)[:80],
-                    risk_contribution=risk_contribution,
-                ))
+                indicators.append(
+                    EmailIndicator(
+                        indicator_type=indicator_type,
+                        description=description,
+                        severity=severity,
+                        confidence=MatchConfidence.MEDIUM,
+                        evidence=match.group(0)[:80],
+                        risk_contribution=risk_contribution,
+                    )
+                )
                 break  # Only count once per category
 
     def _calculate_risk_score(self, indicators: list[EmailIndicator]) -> float:
@@ -714,22 +755,28 @@ class EmailVerificationAgent(BaseAgent):
         recommendations = ["Do not click any links in this email."]
 
         if classification == EmailClassification.MALICIOUS_INDICATORS:
-            recommendations.extend([
-                "Report this email to your security team immediately.",
-                "Delete this email from your inbox.",
-                "Do not download or open any attachments.",
-            ])
+            recommendations.extend(
+                [
+                    "Report this email to your security team immediately.",
+                    "Delete this email from your inbox.",
+                    "Do not download or open any attachments.",
+                ]
+            )
         elif classification == EmailClassification.POSSIBLE_PHISHING:
-            recommendations.extend([
-                "Verify the sender through an alternative channel.",
-                "Do not enter any credentials on linked pages.",
-                "Forward to your security team for review.",
-            ])
+            recommendations.extend(
+                [
+                    "Verify the sender through an alternative channel.",
+                    "Do not enter any credentials on linked pages.",
+                    "Forward to your security team for review.",
+                ]
+            )
         elif classification == EmailClassification.POSSIBLE_SOCIAL_ENGINEERING:
-            recommendations.extend([
-                "Be skeptical of urgent requests.",
-                "Verify any financial requests through official channels.",
-            ])
+            recommendations.extend(
+                [
+                    "Be skeptical of urgent requests.",
+                    "Verify any financial requests through official channels.",
+                ]
+            )
         else:
             recommendations.append("Exercise caution before taking any action.")
 

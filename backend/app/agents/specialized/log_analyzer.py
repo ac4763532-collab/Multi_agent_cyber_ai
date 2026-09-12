@@ -42,17 +42,13 @@ class LogAnalyzerConfig(BaseModel):
     brute_force_threshold: int = Field(
         default=5, ge=1, description="Failed auth attempts to trigger"
     )
-    brute_force_window_sec: int = Field(
-        default=60, ge=10, description="Time window in seconds"
-    )
+    brute_force_window_sec: int = Field(default=60, ge=10, description="Time window in seconds")
 
     # Rate limiting
     rate_limit_threshold: int = Field(
         default=100, ge=10, description="Requests per window to trigger"
     )
-    rate_limit_window_sec: int = Field(
-        default=60, ge=10, description="Time window in seconds"
-    )
+    rate_limit_window_sec: int = Field(default=60, ge=10, description="Time window in seconds")
 
     # Business hours
     business_hours_start: int = Field(default=8, ge=0, le=23, description="Start hour (0-23)")

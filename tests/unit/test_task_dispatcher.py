@@ -67,7 +67,9 @@ class TestTaskRouter:
     def test_route_vulnerability(self):
         """Vulnerability events route to VulnerabilityAgent."""
         router = TaskRouter()
-        event = _make_event(source_type="vulnerability_scanner", event_type="vulnerability_found")
+        event = _make_event(
+            source_type="vulnerability_scanner", event_type="vulnerability_found"
+        )
         agent_type = router.route(event)
         assert agent_type == AgentType.VULNERABILITY
 
@@ -105,7 +107,9 @@ class TestTaskTracker:
     @pytest.fixture
     def tracker(self):
         """Create tracker with mocked Redis."""
-        with patch("backend.app.agents.dispatcher.tracker._get_redis_client") as mock_fn:
+        with patch(
+            "backend.app.agents.dispatcher.tracker._get_redis_client"
+        ) as mock_fn:
             mock_fn.return_value = None  # Use local cache only
             return TaskTracker()
 
@@ -188,7 +192,9 @@ class TestTaskTracker:
         task.retry_count = 3
         tracker._tasks[task.task_id] = task
 
-        updated = await tracker.mark_dead_letter(task.task_id, error="Max retries exceeded")
+        updated = await tracker.mark_dead_letter(
+            task.task_id, error="Max retries exceeded"
+        )
         assert updated.status == TaskStatus.DEAD_LETTER
 
     @pytest.mark.asyncio
@@ -215,7 +221,9 @@ class TestTaskTracker:
         initial_metrics = await tracker.get_metrics()
         initial_count = initial_metrics.get("tasks_created", 0)
 
-        await tracker.create_task(event_id="evt_009", agent_type=AgentType.EMAIL_VERIFICATION)
+        await tracker.create_task(
+            event_id="evt_009", agent_type=AgentType.EMAIL_VERIFICATION
+        )
         await tracker.create_task(event_id="evt_010", agent_type=AgentType.LOG_ANALYZER)
 
         metrics = await tracker.get_metrics()
@@ -228,11 +236,21 @@ class TestTaskDispatcherAgent:
     @pytest.fixture
     def dispatcher(self):
         """Create dispatcher with mocked dependencies."""
-        with patch("backend.app.agents.dispatcher.dispatcher.get_task_router") as mock_router, \
-             patch("backend.app.agents.dispatcher.dispatcher.get_task_tracker") as mock_tracker:
+        with (
+            patch(
+                "backend.app.agents.dispatcher.dispatcher.get_task_router"
+            ) as mock_router,
+            patch(
+                "backend.app.agents.dispatcher.dispatcher.get_task_tracker"
+            ) as mock_tracker,
+        ):
             mock_router_instance = MagicMock()
-            mock_router_instance.route = MagicMock(return_value=AgentType.EMAIL_VERIFICATION)
-            mock_router_instance.get_priority = MagicMock(return_value=TaskPriority.MEDIUM)
+            mock_router_instance.route = MagicMock(
+                return_value=AgentType.EMAIL_VERIFICATION
+            )
+            mock_router_instance.get_priority = MagicMock(
+                return_value=TaskPriority.MEDIUM
+            )
             mock_router.return_value = mock_router_instance
 
             mock_tracker_instance = MagicMock()
@@ -281,7 +299,9 @@ class TestTaskDispatcherAgent:
             event_type="email_received",
         )
         # Mock the broker publish to avoid Kafka connection
-        with patch("backend.app.agents.dispatcher.dispatcher.get_broker_manager") as mock_broker:
+        with patch(
+            "backend.app.agents.dispatcher.dispatcher.get_broker_manager"
+        ) as mock_broker:
             mock_broker_instance = MagicMock()
             mock_broker_instance.publish_event = AsyncMock(return_value=True)
             mock_broker.return_value = mock_broker_instance
@@ -297,6 +317,7 @@ class TestGetTaskRouter:
     def test_returns_same_instance(self):
         """Singleton returns same instance."""
         import backend.app.agents.dispatcher.router as router_module
+
         router_module._router = None
 
         r1 = get_task_router()
@@ -310,6 +331,7 @@ class TestGetTaskTracker:
     def test_returns_same_instance(self):
         """Singleton returns same instance."""
         import backend.app.agents.dispatcher.tracker as tracker_module
+
         tracker_module._tracker = None
 
         t1 = get_task_tracker()

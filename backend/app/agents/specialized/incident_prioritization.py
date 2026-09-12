@@ -180,10 +180,7 @@ class IncidentPrioritizationAgent(BaseAgent):
     async def validate_task(self, task: AgentTask) -> bool:
         """Validate task has incident data."""
         payload = task.payload or {}
-        return any(
-            k in payload
-            for k in ["incident", "finding", "event", "alert", "findings"]
-        )
+        return any(k in payload for k in ["incident", "finding", "event", "alert", "findings"])
 
     async def process_task(self, task: AgentTask) -> AgentResult:
         """Process prioritization task."""
@@ -318,14 +315,16 @@ class IncidentPrioritizationAgent(BaseAgent):
         if "incident" in payload:
             incident = payload["incident"]
             if isinstance(incident, dict):
-                data.update({
-                    "severity": self._parse_severity(incident.get("severity")),
-                    "affected_assets": incident.get("affected_assets", 1),
-                    "affected_users": incident.get("affected_users", 0),
-                    "event_types": incident.get("event_types", []),
-                    "mitre_techniques": incident.get("mitre_techniques", []),
-                    "mitre_tactics": incident.get("mitre_tactics", []),
-                })
+                data.update(
+                    {
+                        "severity": self._parse_severity(incident.get("severity")),
+                        "affected_assets": incident.get("affected_assets", 1),
+                        "affected_users": incident.get("affected_users", 0),
+                        "event_types": incident.get("event_types", []),
+                        "mitre_techniques": incident.get("mitre_techniques", []),
+                        "mitre_tactics": incident.get("mitre_tactics", []),
+                    }
+                )
 
         # From finding
         if "finding" in payload:
@@ -364,50 +363,58 @@ class IncidentPrioritizationAgent(BaseAgent):
 
         # Severity factor
         severity_score = self._severity_to_score(data["severity"])
-        factors.append(RiskFactor(
-            factor_name="severity",
-            description="Event/finding severity level",
-            weight=RISK_WEIGHTS["severity"],
-            score=severity_score,
-            weighted_score=severity_score * RISK_WEIGHTS["severity"],
-            evidence=f"Severity: {data['severity'].value}",
-        ))
+        factors.append(
+            RiskFactor(
+                factor_name="severity",
+                description="Event/finding severity level",
+                weight=RISK_WEIGHTS["severity"],
+                score=severity_score,
+                weighted_score=severity_score * RISK_WEIGHTS["severity"],
+                evidence=f"Severity: {data['severity'].value}",
+            )
+        )
 
         # Asset criticality factor
         asset_score = min(data["affected_assets"] / 10, 1.0)
-        factors.append(RiskFactor(
-            factor_name="affected_scope",
-            description="Number of affected assets",
-            weight=RISK_WEIGHTS["affected_scope"],
-            score=asset_score,
-            weighted_score=asset_score * RISK_WEIGHTS["affected_scope"],
-            evidence=f"Affected assets: {data['affected_assets']}",
-        ))
+        factors.append(
+            RiskFactor(
+                factor_name="affected_scope",
+                description="Number of affected assets",
+                weight=RISK_WEIGHTS["affected_scope"],
+                score=asset_score,
+                weighted_score=asset_score * RISK_WEIGHTS["affected_scope"],
+                evidence=f"Affected assets: {data['affected_assets']}",
+            )
+        )
 
         # Attack stage factor (based on MITRE tactics)
         stage_score = self._calculate_attack_stage_score(data.get("mitre_tactics", []))
-        factors.append(RiskFactor(
-            factor_name="attack_stage",
-            description="Stage in attack lifecycle",
-            weight=RISK_WEIGHTS["attack_stage"],
-            score=stage_score,
-            weighted_score=stage_score * RISK_WEIGHTS["attack_stage"],
-            evidence=f"Tactics: {', '.join(data.get('mitre_tactics', [])[:3])}",
-        ))
+        factors.append(
+            RiskFactor(
+                factor_name="attack_stage",
+                description="Stage in attack lifecycle",
+                weight=RISK_WEIGHTS["attack_stage"],
+                score=stage_score,
+                weighted_score=stage_score * RISK_WEIGHTS["attack_stage"],
+                evidence=f"Tactics: {', '.join(data.get('mitre_tactics', [])[:3])}",
+            )
+        )
 
         # Confidence factor
         conf_score = data.get("confidence", 0.5)
         if isinstance(conf_score, str):
             conf_map = {"high": 0.9, "medium": 0.6, "low": 0.3}
             conf_score = conf_map.get(conf_score.lower(), 0.5)
-        factors.append(RiskFactor(
-            factor_name="confidence",
-            description="Detection confidence level",
-            weight=RISK_WEIGHTS["confidence"],
-            score=conf_score,
-            weighted_score=conf_score * RISK_WEIGHTS["confidence"],
-            evidence=f"Confidence: {conf_score:.0%}",
-        ))
+        factors.append(
+            RiskFactor(
+                factor_name="confidence",
+                description="Detection confidence level",
+                weight=RISK_WEIGHTS["confidence"],
+                score=conf_score,
+                weighted_score=conf_score * RISK_WEIGHTS["confidence"],
+                evidence=f"Confidence: {conf_score:.0%}",
+            )
+        )
 
         # Data sensitivity (simplified)
         data_score = 0.5  # Default medium
@@ -415,14 +422,16 @@ class IncidentPrioritizationAgent(BaseAgent):
             data_score = 0.9
         elif any("credential" in t.lower() for t in data.get("event_types", [])):
             data_score = 0.8
-        factors.append(RiskFactor(
-            factor_name="data_sensitivity",
-            description="Sensitivity of data at risk",
-            weight=RISK_WEIGHTS["data_sensitivity"],
-            score=data_score,
-            weighted_score=data_score * RISK_WEIGHTS["data_sensitivity"],
-            evidence="Data sensitivity assessment",
-        ))
+        factors.append(
+            RiskFactor(
+                factor_name="data_sensitivity",
+                description="Sensitivity of data at risk",
+                weight=RISK_WEIGHTS["data_sensitivity"],
+                score=data_score,
+                weighted_score=data_score * RISK_WEIGHTS["data_sensitivity"],
+                evidence="Data sensitivity assessment",
+            )
+        )
 
         return factors
 

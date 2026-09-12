@@ -95,9 +95,7 @@ class Hypothesis(BaseModel):
 class Investigation(BaseModel):
     """Full investigation record."""
 
-    investigation_id: str = Field(
-        default_factory=lambda: f"inv_{uuid.uuid4().hex[:12]}"
-    )
+    investigation_id: str = Field(default_factory=lambda: f"inv_{uuid.uuid4().hex[:12]}")
     title: str
     description: str = ""
     status: InvestigationStatus = InvestigationStatus.PENDING
@@ -363,13 +361,15 @@ class AIInvestigationEngine:
 
         timeline = []
         for evidence in sorted(investigation.evidence, key=lambda e: e.timestamp):
-            timeline.append({
-                "timestamp": evidence.timestamp.isoformat(),
-                "type": evidence.evidence_type.value,
-                "source": evidence.source,
-                "summary": self._summarize_evidence(evidence),
-                "evidence_id": evidence.evidence_id,
-            })
+            timeline.append(
+                {
+                    "timestamp": evidence.timestamp.isoformat(),
+                    "type": evidence.evidence_type.value,
+                    "source": evidence.source,
+                    "summary": self._summarize_evidence(evidence),
+                    "evidence_id": evidence.evidence_id,
+                }
+            )
 
         investigation.timeline = timeline
         return timeline
@@ -433,8 +433,7 @@ class AIInvestigationEngine:
 
         analysis = self.analyze_investigation(investigation_id)
         supported_hyps = [
-            h for h in investigation.hypotheses
-            if h.status == HypothesisStatus.SUPPORTED
+            h for h in investigation.hypotheses if h.status == HypothesisStatus.SUPPORTED
         ]
 
         parts = [

@@ -161,16 +161,18 @@ class DetectionRegistry:
 
         for engine in self._engines.values():
             for rule in engine.list_rules():
-                rules_info.append({
-                    "rule_id": rule.rule_id,
-                    "rule_name": rule.rule_name,
-                    "rule_type": rule.rule_type.value,
-                    "severity": rule.severity.value,
-                    "enabled": rule.enabled,
-                    "mitre_techniques": rule.mitre_techniques,
-                    "tags": rule.tags,
-                    "engine": engine.engine_name,
-                })
+                rules_info.append(
+                    {
+                        "rule_id": rule.rule_id,
+                        "rule_name": rule.rule_name,
+                        "rule_type": rule.rule_type.value,
+                        "severity": rule.severity.value,
+                        "enabled": rule.enabled,
+                        "mitre_techniques": rule.mitre_techniques,
+                        "tags": rule.tags,
+                        "engine": engine.engine_name,
+                    }
+                )
 
         return rules_info
 

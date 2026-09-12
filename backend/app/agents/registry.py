@@ -74,8 +74,7 @@ class AgentRegistry:
         for capability in agent.capabilities:
             if capability in self._capabilities_index:
                 self._capabilities_index[capability] = [
-                    t for t in self._capabilities_index[capability]
-                    if t != agent_type
+                    t for t in self._capabilities_index[capability] if t != agent_type
                 ]
                 if not self._capabilities_index[capability]:
                     del self._capabilities_index[capability]
@@ -180,10 +179,7 @@ class AgentRegistry:
             "total_agents": len(self._agents),
             "agent_types": [t.value for t in self._agents.keys()],
             "total_capabilities": len(self._capabilities_index),
-            "agents": {
-                t.value: self._agents[t].get_stats()
-                for t in self._agents
-            },
+            "agents": {t.value: self._agents[t].get_stats() for t in self._agents},
         }
 
     def clear(self) -> None:

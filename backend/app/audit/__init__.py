@@ -387,7 +387,7 @@ class SecurityAuditor:
             (r'api_key\s*=\s*["\'][^"\']+["\']', "Hardcoded API key"),
             (r'secret\s*=\s*["\'][^"\']+["\']', "Hardcoded secret"),
             (r'token\s*=\s*["\'][A-Za-z0-9+/=]{20,}["\']', "Hardcoded token"),
-            (r'-----BEGIN\s+(?:RSA\s+)?PRIVATE\s+KEY-----', "Private key in code"),
+            (r"-----BEGIN\s+(?:RSA\s+)?PRIVATE\s+KEY-----", "Private key in code"),
         ]
 
         for pattern, description in patterns:
@@ -412,10 +412,10 @@ class SecurityAuditor:
 
         # Patterns that might indicate SQL injection vulnerability
         patterns = [
-            (r'execute\([^)]*\%s', "String formatting in SQL execute"),
+            (r"execute\([^)]*\%s", "String formatting in SQL execute"),
             (r'f"SELECT.*{', "F-string in SQL query"),
-            (r'\.format\(.*\).*(?:SELECT|INSERT|UPDATE|DELETE)', "Format string in SQL"),
-            (r'\+\s*(?:request|user_input|data)', "String concatenation with user input"),
+            (r"\.format\(.*\).*(?:SELECT|INSERT|UPDATE|DELETE)", "Format string in SQL"),
+            (r"\+\s*(?:request|user_input|data)", "String concatenation with user input"),
         ]
 
         for pattern, description in patterns:
@@ -440,9 +440,7 @@ class SecurityAuditor:
                 return f
         return None
 
-    def resolve_finding(
-        self, finding_id: str, resolution_notes: str = ""
-    ) -> AuditFinding | None:
+    def resolve_finding(self, finding_id: str, resolution_notes: str = "") -> AuditFinding | None:
         """Mark finding as resolved."""
         finding = self.get_finding(finding_id)
         if finding:
@@ -456,9 +454,7 @@ class SecurityAuditor:
         """Get all audit reports."""
         return self._reports
 
-    def get_findings_by_severity(
-        self, severity: AuditSeverity
-    ) -> list[AuditFinding]:
+    def get_findings_by_severity(self, severity: AuditSeverity) -> list[AuditFinding]:
         """Get findings filtered by severity."""
         return [f for f in self._findings if f.severity == severity]
 

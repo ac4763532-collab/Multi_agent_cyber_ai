@@ -204,9 +204,7 @@ class AlertManager:
         alert.updated_at = utc_now()
         return alert
 
-    def acknowledge_alert(
-        self, alert_id: str, acknowledged_by: str
-    ) -> Alert | None:
+    def acknowledge_alert(self, alert_id: str, acknowledged_by: str) -> Alert | None:
         """Acknowledge an alert."""
         alert = self._alerts.get(alert_id)
         if not alert:
@@ -231,9 +229,7 @@ class AlertManager:
         if not alert:
             return None
 
-        alert.status = (
-            AlertStatus.FALSE_POSITIVE if is_false_positive else AlertStatus.RESOLVED
-        )
+        alert.status = AlertStatus.FALSE_POSITIVE if is_false_positive else AlertStatus.RESOLVED
         alert.resolved_by = resolved_by
         alert.resolved_at = utc_now()
         alert.resolution_notes = resolution_notes

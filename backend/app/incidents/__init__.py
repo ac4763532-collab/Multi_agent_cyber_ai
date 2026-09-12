@@ -210,12 +210,14 @@ class IncidentManager:
         )
 
         # Add creation to timeline
-        incident.timeline.append(IncidentTimeline(
-            timestamp=utc_now(),
-            event_type="incident_created",
-            description=f"Incident created: {title}",
-            source="system",
-        ))
+        incident.timeline.append(
+            IncidentTimeline(
+                timestamp=utc_now(),
+                event_type="incident_created",
+                description=f"Incident created: {title}",
+                source="system",
+            )
+        )
 
         self._incidents[incident.incident_id] = incident
         self._incident_count += 1
@@ -256,14 +258,16 @@ class IncidentManager:
                 incident.time_to_resolve_minutes = int(delta)
 
         # Add to timeline
-        incident.timeline.append(IncidentTimeline(
-            timestamp=now,
-            event_type="status_change",
-            description=f"Status changed from {old_status.value} to {new_status.value}",
-            source="system",
-            actor=actor,
-            metadata={"notes": notes} if notes else {},
-        ))
+        incident.timeline.append(
+            IncidentTimeline(
+                timestamp=now,
+                event_type="status_change",
+                description=f"Status changed from {old_status.value} to {new_status.value}",
+                source="system",
+                actor=actor,
+                metadata={"notes": notes} if notes else {},
+            )
+        )
 
         return incident
 
@@ -283,12 +287,14 @@ class IncidentManager:
             incident.assigned_team = team
         incident.updated_at = utc_now()
 
-        incident.timeline.append(IncidentTimeline(
-            timestamp=utc_now(),
-            event_type="assignment",
-            description=f"Assigned to {owner}" + (f" ({team})" if team else ""),
-            source="system",
-        ))
+        incident.timeline.append(
+            IncidentTimeline(
+                timestamp=utc_now(),
+                event_type="assignment",
+                description=f"Assigned to {owner}" + (f" ({team})" if team else ""),
+                source="system",
+            )
+        )
 
         return incident
 
@@ -436,13 +442,15 @@ class IncidentManager:
             delta = (incident.closed_at - incident.detected_at).total_seconds() / 60
             incident.time_to_resolve_minutes = int(delta)
 
-        incident.timeline.append(IncidentTimeline(
-            timestamp=utc_now(),
-            event_type="incident_closed",
-            description=f"Incident closed by {closed_by}",
-            source="system",
-            actor=closed_by,
-        ))
+        incident.timeline.append(
+            IncidentTimeline(
+                timestamp=utc_now(),
+                event_type="incident_closed",
+                description=f"Incident closed by {closed_by}",
+                source="system",
+                actor=closed_by,
+            )
+        )
 
         return incident
 
@@ -474,9 +482,7 @@ class IncidentManager:
             IncidentSeverity.MEDIUM: 2,
             IncidentSeverity.LOW: 3,
         }
-        incidents.sort(
-            key=lambda i: (severity_order.get(i.severity, 4), -i.created_at.timestamp())
-        )
+        incidents.sort(key=lambda i: (severity_order.get(i.severity, 4), -i.created_at.timestamp()))
 
         return incidents[offset : offset + limit]
 

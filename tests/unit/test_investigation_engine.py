@@ -189,7 +189,9 @@ class TestAIInvestigationEngine:
     def test_list_investigations(self, engine: AIInvestigationEngine) -> None:
         """Test listing investigations."""
         engine.create_investigation(title="Inv 1", priority=InvestigationPriority.HIGH)
-        engine.create_investigation(title="Inv 2", priority=InvestigationPriority.MEDIUM)
+        engine.create_investigation(
+            title="Inv 2", priority=InvestigationPriority.MEDIUM
+        )
 
         investigations = engine.list_investigations()
         assert len(investigations) == 2
@@ -218,6 +220,7 @@ class TestInvestigationEngineSingleton:
     def test_singleton_returns_same_instance(self) -> None:
         """Singleton should return same instance."""
         import backend.app.investigation as investigation_module
+
         investigation_module._engine = None
 
         e1 = get_investigation_engine()

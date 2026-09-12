@@ -304,6 +304,7 @@ class TaskDispatcherAgent(BaseAgent):
         Args:
             task: AgentTask to publish.
         """
+
         async def _do_publish() -> None:
             broker = get_broker_manager()
             await broker.publish_event(
@@ -414,11 +415,13 @@ class TaskDispatcherAgent(BaseAgent):
             Dict with dispatcher metrics.
         """
         base_stats = super().get_stats()
-        base_stats.update({
-            "events_dispatched": self._events_dispatched,
-            "routing_failures": self._routing_failures,
-            "routing_rules_count": len(self._router.list_rules()),
-        })
+        base_stats.update(
+            {
+                "events_dispatched": self._events_dispatched,
+                "routing_failures": self._routing_failures,
+                "routing_rules_count": len(self._router.list_rules()),
+            }
+        )
         return base_stats
 
 

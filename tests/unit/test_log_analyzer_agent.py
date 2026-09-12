@@ -332,9 +332,21 @@ class TestLogAnalyzerAgent:
             agent_type=AgentType.LOG_ANALYZER,
             payload={
                 "events": [
-                    {"event_id": "evt_1", "event_type": "auth_failed", "source_ip": "1.1.1.1"},
-                    {"event_id": "evt_2", "event_type": "file_access", "source_ip": "1.1.1.2"},
-                    {"event_id": "evt_3", "event_type": "process_start", "source_ip": "1.1.1.3"},
+                    {
+                        "event_id": "evt_1",
+                        "event_type": "auth_failed",
+                        "source_ip": "1.1.1.1",
+                    },
+                    {
+                        "event_id": "evt_2",
+                        "event_type": "file_access",
+                        "source_ip": "1.1.1.2",
+                    },
+                    {
+                        "event_id": "evt_3",
+                        "event_type": "process_start",
+                        "source_ip": "1.1.1.3",
+                    },
                 ]
             },
         )

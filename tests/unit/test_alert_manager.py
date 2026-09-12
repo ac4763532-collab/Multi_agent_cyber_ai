@@ -175,9 +175,19 @@ class TestAlertPrioritizer:
     def test_prioritize_alerts(self, prioritizer: AlertPrioritizer) -> None:
         """Test alert prioritization."""
         alerts = [
-            Alert(title="Low", severity=AlertSeverity.LOW, category=AlertCategory.ANOMALY),
-            Alert(title="Critical", severity=AlertSeverity.CRITICAL, category=AlertCategory.MALWARE),
-            Alert(title="Medium", severity=AlertSeverity.MEDIUM, category=AlertCategory.PHISHING),
+            Alert(
+                title="Low", severity=AlertSeverity.LOW, category=AlertCategory.ANOMALY
+            ),
+            Alert(
+                title="Critical",
+                severity=AlertSeverity.CRITICAL,
+                category=AlertCategory.MALWARE,
+            ),
+            Alert(
+                title="Medium",
+                severity=AlertSeverity.MEDIUM,
+                category=AlertCategory.PHISHING,
+            ),
         ]
 
         prioritized = prioritizer.prioritize_alerts(alerts)
@@ -192,6 +202,7 @@ class TestAlertManagerSingleton:
     def test_singleton_returns_same_instance(self) -> None:
         """Singleton should return same instance."""
         import backend.app.alerting as alerting_module
+
         alerting_module._alert_manager = None
 
         m1 = get_alert_manager()

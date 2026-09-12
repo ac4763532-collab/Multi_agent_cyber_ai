@@ -363,9 +363,7 @@ class TaskTracker:
             "tasks_completed": self._tasks_completed,
             "tasks_failed": self._tasks_failed,
             "avg_latency_ms": (
-                self._total_latency_ms / self._tasks_completed
-                if self._tasks_completed > 0
-                else 0.0
+                self._total_latency_ms / self._tasks_completed if self._tasks_completed > 0 else 0.0
             ),
         }
 

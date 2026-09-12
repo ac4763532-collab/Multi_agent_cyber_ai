@@ -285,8 +285,7 @@ class ResponseRecommendationAgent(BaseAgent):
         """Validate task has incident data."""
         payload = task.payload or {}
         return any(
-            k in payload
-            for k in ["incident", "finding", "event", "threat_type", "classification"]
+            k in payload for k in ["incident", "finding", "event", "threat_type", "classification"]
         )
 
     async def process_task(self, task: AgentTask) -> AgentResult:
@@ -318,18 +317,13 @@ class ResponseRecommendationAgent(BaseAgent):
             playbook = self._generate_playbook(context, all_actions)
 
             # Calculate metrics
-            immediate_count = sum(
-                1 for a in all_actions if a.urgency == ResponseUrgency.IMMEDIATE
-            )
+            immediate_count = sum(1 for a in all_actions if a.urgency == ResponseUrgency.IMMEDIATE)
             total_time = sum(a.estimated_duration_minutes for a in all_actions)
             automatable_levels = (
                 AutomationLevel.FULLY_AUTOMATED,
                 AutomationLevel.SEMI_AUTOMATED,
             )
-            can_automate = any(
-                a.automation_level in automatable_levels
-                for a in all_actions
-            )
+            can_automate = any(a.automation_level in automatable_levels for a in all_actions)
 
             # Determine severity
             severity = EventSeverity.HIGH if immediate_count > 2 else EventSeverity.MEDIUM
@@ -474,9 +468,7 @@ class ResponseRecommendationAgent(BaseAgent):
 
         return context
 
-    def _generate_containment_actions(
-        self, context: dict[str, Any]
-    ) -> list[ResponseAction]:
+    def _generate_containment_actions(self, context: dict[str, Any]) -> list[ResponseAction]:
         """Generate containment actions based on context."""
         actions: list[ResponseAction] = []
 
@@ -518,9 +510,7 @@ class ResponseRecommendationAgent(BaseAgent):
 
         return actions
 
-    def _generate_eradication_actions(
-        self, context: dict[str, Any]
-    ) -> list[ResponseAction]:
+    def _generate_eradication_actions(self, context: dict[str, Any]) -> list[ResponseAction]:
         """Generate eradication actions based on context."""
         actions: list[ResponseAction] = []
 
@@ -554,9 +544,7 @@ class ResponseRecommendationAgent(BaseAgent):
 
         return actions
 
-    def _generate_recovery_actions(
-        self, context: dict[str, Any]
-    ) -> list[ResponseAction]:
+    def _generate_recovery_actions(self, context: dict[str, Any]) -> list[ResponseAction]:
         """Generate recovery actions based on context."""
         actions: list[ResponseAction] = []
 

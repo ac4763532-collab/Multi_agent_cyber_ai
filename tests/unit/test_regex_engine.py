@@ -20,6 +20,7 @@ class TestRegexRule:
     def sqli_rule(self) -> RegexRule:
         """Create SQL injection detection rule."""
         import re
+
         return RegexRule(
             rule_id="test_sqli_union",
             rule_name="Test SQL Injection UNION",
@@ -40,7 +41,9 @@ class TestRegexRule:
             source_type="application",
             event_type="web_request",
             severity=EventSeverity.LOW,
-            raw_data={"request": "GET /search?q=' UNION SELECT username,password FROM users--"},
+            raw_data={
+                "request": "GET /search?q=' UNION SELECT username,password FROM users--"
+            },
             normalized_data={"action": "allowed"},
             url="/search?q=' UNION SELECT username,password FROM users--",
         )
@@ -53,7 +56,9 @@ class TestRegexRule:
         assert "sqli" in sqli_rule.tags
         assert sqli_rule.enabled is True
 
-    def test_regex_rule_matches(self, sqli_rule: RegexRule, sqli_event: SecurityEvent) -> None:
+    def test_regex_rule_matches(
+        self, sqli_rule: RegexRule, sqli_event: SecurityEvent
+    ) -> None:
         """Verify rule matches SQL injection pattern."""
         match = sqli_rule.matches(sqli_event)
 
@@ -176,7 +181,9 @@ class TestRegexEngine:
         matches = engine.evaluate(event)
         assert len(matches) >= 1
 
-        log4j_matches = [m for m in matches if "log4shell" in m.tags or "jndi" in m.tags]
+        log4j_matches = [
+            m for m in matches if "log4shell" in m.tags or "jndi" in m.tags
+        ]
         assert len(log4j_matches) >= 1
 
     def test_evaluate_path_traversal_detection(self, engine: RegexEngine) -> None:
@@ -196,7 +203,9 @@ class TestRegexEngine:
         matches = engine.evaluate(event)
         assert len(matches) >= 1
 
-        lfi_matches = [m for m in matches if "lfi" in m.tags or "path-traversal" in m.tags]
+        lfi_matches = [
+            m for m in matches if "lfi" in m.tags or "path-traversal" in m.tags
+        ]
         assert len(lfi_matches) >= 1
 
     def test_evaluate_clean_event(self, engine: RegexEngine) -> None:
@@ -246,8 +255,11 @@ class TestBuiltinPatterns:
     def test_builtin_patterns_valid_regex(self) -> None:
         """Verify all built-in patterns are valid regex."""
         import re
+
         for pattern in BUILTIN_PATTERNS:
             try:
                 re.compile(pattern["pattern"])
             except re.error:
-                pytest.fail(f"Invalid regex in pattern {pattern['id']}: {pattern['pattern']}")
+                pytest.fail(
+                    f"Invalid regex in pattern {pattern['id']}: {pattern['pattern']}"
+                )

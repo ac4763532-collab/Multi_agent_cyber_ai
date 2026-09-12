@@ -61,6 +61,8 @@ def get_session_maker() -> async_sessionmaker[AsyncSession]:
             autoflush=False,
         )
     return _session_maker
+
+
 async def init_db() -> None:
     """Create database tables that do not already exist."""
     engine = get_engine()

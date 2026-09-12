@@ -167,9 +167,7 @@ class IntelligenceCache:
         """Generate cache key."""
         return f"{indicator_type.value}:{indicator.lower()}"
 
-    def get(
-        self, indicator: str, indicator_type: IndicatorType
-    ) -> IntelligenceResult | None:
+    def get(self, indicator: str, indicator_type: IndicatorType) -> IntelligenceResult | None:
         """Get cached result."""
         key = self._key(indicator, indicator_type)
         if key in self._cache:
@@ -242,18 +240,14 @@ class ThreatIntelligenceEngine:
         self._lookup_count += 1
         return results
 
-    async def lookup_batch(
-        self, indicators: list[str]
-    ) -> dict[str, list[IntelligenceResult]]:
+    async def lookup_batch(self, indicators: list[str]) -> dict[str, list[IntelligenceResult]]:
         """Look up multiple indicators."""
         results: dict[str, list[IntelligenceResult]] = {}
         for indicator in indicators:
             results[indicator] = await self.lookup(indicator)
         return results
 
-    async def enrich_event(
-        self, event: dict[str, Any]
-    ) -> dict[str, list[IntelligenceResult]]:
+    async def enrich_event(self, event: dict[str, Any]) -> dict[str, list[IntelligenceResult]]:
         """Enrich an event with threat intelligence."""
         enrichments: dict[str, list[IntelligenceResult]] = {}
 
@@ -299,9 +293,7 @@ class ThreatIntelligenceEngine:
         # Default to domain
         return IndicatorType.DOMAIN
 
-    def _extract_indicators(
-        self, event: dict[str, Any]
-    ) -> list[tuple[str, IndicatorType]]:
+    def _extract_indicators(self, event: dict[str, Any]) -> list[tuple[str, IndicatorType]]:
         """Extract indicators from an event."""
         indicators: list[tuple[str, IndicatorType]] = []
 
@@ -329,9 +321,7 @@ class ThreatIntelligenceEngine:
 
         return indicators
 
-    def get_aggregated_reputation(
-        self, results: list[IntelligenceResult]
-    ) -> ThreatReputation:
+    def get_aggregated_reputation(self, results: list[IntelligenceResult]) -> ThreatReputation:
         """Get aggregated reputation from multiple results."""
         if not results:
             return ThreatReputation.UNKNOWN

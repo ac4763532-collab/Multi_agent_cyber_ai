@@ -110,9 +110,7 @@ class RateLimiter:
             "total_requests": self._request_count,
             "rejected_requests": self._rejected_count,
             "rejection_rate": (
-                self._rejected_count / self._request_count
-                if self._request_count > 0
-                else 0.0
+                self._rejected_count / self._request_count if self._request_count > 0 else 0.0
             ),
         }
 
@@ -451,15 +449,11 @@ class PerformanceOptimizer:
         """Get all performance metrics."""
         return {
             "monitor": self.monitor.get_summary(),
-            "rate_limiters": {
-                name: rl.get_metrics() for name, rl in self.rate_limiters.items()
-            },
+            "rate_limiters": {name: rl.get_metrics() for name, rl in self.rate_limiters.items()},
             "circuit_breakers": {
                 name: cb.get_state() for name, cb in self.circuit_breakers.items()
             },
-            "caches": {
-                name: cache.get_metrics() for name, cache in self.caches.items()
-            },
+            "caches": {name: cache.get_metrics() for name, cache in self.caches.items()},
         }
 
 

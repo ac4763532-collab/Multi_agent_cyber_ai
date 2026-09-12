@@ -302,7 +302,7 @@ class DetectionEngine(DetectionEngineInterface):
 
         # Keep bounded samples
         if len(self._latencies) > self._max_latency_samples:
-            self._latencies = self._latencies[-self._max_latency_samples:]
+            self._latencies = self._latencies[-self._max_latency_samples :]
 
         # Update stats
         if self._latencies:

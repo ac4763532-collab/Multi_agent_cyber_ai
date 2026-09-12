@@ -114,7 +114,9 @@ class TestIoCRule:
         store = IoCStore()
         store.add_ip("203.0.113.100", context={"category": "c2"})
         store.add_domain("evil-c2.example.com")
-        store.add_hash("e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855")
+        store.add_hash(
+            "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        )
         return store
 
     @pytest.fixture

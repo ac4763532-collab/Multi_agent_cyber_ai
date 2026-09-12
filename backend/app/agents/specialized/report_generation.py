@@ -146,9 +146,7 @@ class ReportGenerationAgent(BaseAgent):
         try:
             # Determine report type and format
             report_type = self._determine_report_type(payload)
-            report_format = ReportFormat(
-                payload.get("format", "markdown").lower()
-            )
+            report_format = ReportFormat(payload.get("format", "markdown").lower())
 
             # Extract data for report
             report_data = self._extract_report_data(payload)
@@ -352,72 +350,86 @@ class ReportGenerationAgent(BaseAgent):
         sections = []
 
         # Executive Summary
-        sections.append(ReportSection(
-            section_id="exec_summary",
-            title="Executive Summary",
-            content=self._generate_summary(data),
-            order=1,
-        ))
+        sections.append(
+            ReportSection(
+                section_id="exec_summary",
+                title="Executive Summary",
+                content=self._generate_summary(data),
+                order=1,
+            )
+        )
 
         # Incident Overview
         overview_content = self._format_incident_overview(data)
-        sections.append(ReportSection(
-            section_id="overview",
-            title="Incident Overview",
-            content=overview_content,
-            order=2,
-        ))
+        sections.append(
+            ReportSection(
+                section_id="overview",
+                title="Incident Overview",
+                content=overview_content,
+                order=2,
+            )
+        )
 
         # Timeline
         if data.get("timeline") or data.get("events"):
             timeline_content = self._format_timeline(data)
-            sections.append(ReportSection(
-                section_id="timeline",
-                title="Timeline of Events",
-                content=timeline_content,
-                order=3,
-            ))
+            sections.append(
+                ReportSection(
+                    section_id="timeline",
+                    title="Timeline of Events",
+                    content=timeline_content,
+                    order=3,
+                )
+            )
 
         # Technical Findings
         if data.get("findings"):
             findings_content = self._format_findings(data["findings"])
-            sections.append(ReportSection(
-                section_id="findings",
-                title="Technical Findings",
-                content=findings_content,
-                order=4,
-            ))
+            sections.append(
+                ReportSection(
+                    section_id="findings",
+                    title="Technical Findings",
+                    content=findings_content,
+                    order=4,
+                )
+            )
 
         # Affected Assets
         if data.get("affected_assets"):
             assets_content = self._format_affected_assets(data["affected_assets"])
-            sections.append(ReportSection(
-                section_id="assets",
-                title="Affected Assets",
-                content=assets_content,
-                order=5,
-            ))
+            sections.append(
+                ReportSection(
+                    section_id="assets",
+                    title="Affected Assets",
+                    content=assets_content,
+                    order=5,
+                )
+            )
 
         # MITRE ATT&CK Mapping
         if data.get("mitre_techniques"):
             mitre_content = self._format_mitre_mapping(data["mitre_techniques"])
-            sections.append(ReportSection(
-                section_id="mitre",
-                title="MITRE ATT&CK Mapping",
-                content=mitre_content,
-                order=6,
-            ))
+            sections.append(
+                ReportSection(
+                    section_id="mitre",
+                    title="MITRE ATT&CK Mapping",
+                    content=mitre_content,
+                    order=6,
+                )
+            )
 
         # Recommendations
         recommendations = self._generate_recommendations(data)
         if recommendations:
             rec_content = self._format_recommendations(recommendations)
-            sections.append(ReportSection(
-                section_id="recommendations",
-                title="Recommendations",
-                content=rec_content,
-                order=7,
-            ))
+            sections.append(
+                ReportSection(
+                    section_id="recommendations",
+                    title="Recommendations",
+                    content=rec_content,
+                    order=7,
+                )
+            )
 
         return sections
 
@@ -426,36 +438,44 @@ class ReportGenerationAgent(BaseAgent):
         sections = []
 
         # Key Points
-        sections.append(ReportSection(
-            section_id="key_points",
-            title="Key Points",
-            content=self._format_key_points(data),
-            order=1,
-        ))
+        sections.append(
+            ReportSection(
+                section_id="key_points",
+                title="Key Points",
+                content=self._format_key_points(data),
+                order=1,
+            )
+        )
 
         # Impact Summary
-        sections.append(ReportSection(
-            section_id="impact",
-            title="Business Impact",
-            content=self._format_business_impact(data),
-            order=2,
-        ))
+        sections.append(
+            ReportSection(
+                section_id="impact",
+                title="Business Impact",
+                content=self._format_business_impact(data),
+                order=2,
+            )
+        )
 
         # Risk Assessment
-        sections.append(ReportSection(
-            section_id="risk",
-            title="Risk Assessment",
-            content=self._format_risk_assessment(data),
-            order=3,
-        ))
+        sections.append(
+            ReportSection(
+                section_id="risk",
+                title="Risk Assessment",
+                content=self._format_risk_assessment(data),
+                order=3,
+            )
+        )
 
         # Recommended Actions
-        sections.append(ReportSection(
-            section_id="actions",
-            title="Recommended Actions",
-            content=self._format_recommendations(self._generate_recommendations(data)),
-            order=4,
-        ))
+        sections.append(
+            ReportSection(
+                section_id="actions",
+                title="Recommended Actions",
+                content=self._format_recommendations(self._generate_recommendations(data)),
+                order=4,
+            )
+        )
 
         return sections
 
@@ -464,93 +484,111 @@ class ReportGenerationAgent(BaseAgent):
         sections = []
 
         # Technical Overview
-        sections.append(ReportSection(
-            section_id="tech_overview",
-            title="Technical Overview",
-            content=self._format_incident_overview(data),
-            order=1,
-        ))
+        sections.append(
+            ReportSection(
+                section_id="tech_overview",
+                title="Technical Overview",
+                content=self._format_incident_overview(data),
+                order=1,
+            )
+        )
 
         # Detailed Findings
         if data.get("findings"):
-            sections.append(ReportSection(
-                section_id="detailed_findings",
-                title="Detailed Technical Findings",
-                content=self._format_detailed_findings(data["findings"]),
-                order=2,
-            ))
+            sections.append(
+                ReportSection(
+                    section_id="detailed_findings",
+                    title="Detailed Technical Findings",
+                    content=self._format_detailed_findings(data["findings"]),
+                    order=2,
+                )
+            )
 
         # Indicators of Compromise
-        sections.append(ReportSection(
-            section_id="iocs",
-            title="Indicators of Compromise",
-            content=self._format_iocs(data),
-            order=3,
-        ))
+        sections.append(
+            ReportSection(
+                section_id="iocs",
+                title="Indicators of Compromise",
+                content=self._format_iocs(data),
+                order=3,
+            )
+        )
 
         # Attack Chain Analysis
-        sections.append(ReportSection(
-            section_id="attack_chain",
-            title="Attack Chain Analysis",
-            content=self._format_attack_chain(data),
-            order=4,
-        ))
+        sections.append(
+            ReportSection(
+                section_id="attack_chain",
+                title="Attack Chain Analysis",
+                content=self._format_attack_chain(data),
+                order=4,
+            )
+        )
 
         # Remediation Steps
-        sections.append(ReportSection(
-            section_id="remediation",
-            title="Technical Remediation Steps",
-            content=self._format_remediation(data),
-            order=5,
-        ))
+        sections.append(
+            ReportSection(
+                section_id="remediation",
+                title="Technical Remediation Steps",
+                content=self._format_remediation(data),
+                order=5,
+            )
+        )
 
         return sections
 
-    def _generate_investigation_sections(
-        self, data: dict[str, Any]
-    ) -> list[ReportSection]:
+    def _generate_investigation_sections(self, data: dict[str, Any]) -> list[ReportSection]:
         """Generate sections for investigation report."""
         sections = []
 
         # Investigation Summary
-        sections.append(ReportSection(
-            section_id="inv_summary",
-            title="Investigation Summary",
-            content=self._generate_summary(data),
-            order=1,
-        ))
+        sections.append(
+            ReportSection(
+                section_id="inv_summary",
+                title="Investigation Summary",
+                content=self._generate_summary(data),
+                order=1,
+            )
+        )
 
         # Scope and Methodology
-        sections.append(ReportSection(
-            section_id="methodology",
-            title="Scope and Methodology",
-            content=self._format_methodology(),
-            order=2,
-        ))
+        sections.append(
+            ReportSection(
+                section_id="methodology",
+                title="Scope and Methodology",
+                content=self._format_methodology(),
+                order=2,
+            )
+        )
 
         # Forensic Timeline
-        sections.append(ReportSection(
-            section_id="forensic_timeline",
-            title="Forensic Timeline",
-            content=self._format_timeline(data),
-            order=3,
-        ))
+        sections.append(
+            ReportSection(
+                section_id="forensic_timeline",
+                title="Forensic Timeline",
+                content=self._format_timeline(data),
+                order=3,
+            )
+        )
 
         # Evidence Analysis
-        sections.append(ReportSection(
-            section_id="evidence",
-            title="Evidence Analysis",
-            content=self._format_evidence(data),
-            order=4,
-        ))
+        sections.append(
+            ReportSection(
+                section_id="evidence",
+                title="Evidence Analysis",
+                content=self._format_evidence(data),
+                order=4,
+            )
+        )
 
         # Conclusions
-        sections.append(ReportSection(
-            section_id="conclusions",
-            title="Conclusions",
-            content=self._format_conclusions(data),
-            order=5,
-        ))
+        sections.append(
+            ReportSection(
+                section_id="conclusions",
+                title="Conclusions",
+                content=self._format_conclusions(data),
+                order=5,
+            )
+        )
 
         return sections
 
@@ -598,13 +636,9 @@ class ReportGenerationAgent(BaseAgent):
 
         if data.get("mitre_techniques"):
             techniques = data["mitre_techniques"][:3]
-            summary_parts.append(
-                f"MITRE ATT&CK techniques observed: {', '.join(techniques)}."
-            )
+            summary_parts.append(f"MITRE ATT&CK techniques observed: {', '.join(techniques)}.")
 
-        summary_parts.append(
-            "Immediate remediation actions are recommended based on the findings."
-        )
+        summary_parts.append("Immediate remediation actions are recommended based on the findings.")
 
         return " ".join(summary_parts)
 
@@ -616,14 +650,10 @@ class ReportGenerationAgent(BaseAgent):
         key_findings.append(f"Incident severity: {severity.upper()}")
 
         if data.get("affected_assets"):
-            key_findings.append(
-                f"{len(data['affected_assets'])} assets identified as affected"
-            )
+            key_findings.append(f"{len(data['affected_assets'])} assets identified as affected")
 
         if data.get("mitre_techniques"):
-            key_findings.append(
-                "Attack techniques mapped to MITRE ATT&CK framework"
-            )
+            key_findings.append("Attack techniques mapped to MITRE ATT&CK framework")
 
         for finding in data.get("findings", [])[:5]:
             if isinstance(finding, dict):
@@ -643,41 +673,41 @@ class ReportGenerationAgent(BaseAgent):
 
         # Severity-based recommendations
         if severity in ("critical", "high"):
-            recommendations.extend([
-                "Activate incident response team immediately",
-                "Isolate affected systems from the network",
-                "Preserve all evidence for forensic analysis",
-            ])
+            recommendations.extend(
+                [
+                    "Activate incident response team immediately",
+                    "Isolate affected systems from the network",
+                    "Preserve all evidence for forensic analysis",
+                ]
+            )
         else:
-            recommendations.extend([
-                "Review affected systems for compromise indicators",
-                "Update security monitoring rules",
-            ])
+            recommendations.extend(
+                [
+                    "Review affected systems for compromise indicators",
+                    "Update security monitoring rules",
+                ]
+            )
 
         # Asset-based recommendations
         if data.get("affected_assets"):
-            recommendations.append(
-                "Conduct thorough review of all affected assets"
-            )
+            recommendations.append("Conduct thorough review of all affected assets")
 
         # User-based recommendations
         if data.get("affected_users"):
-            recommendations.append(
-                "Reset credentials for affected user accounts"
-            )
+            recommendations.append("Reset credentials for affected user accounts")
 
         # MITRE-based recommendations
         if data.get("mitre_techniques"):
-            recommendations.append(
-                "Implement mitigations for identified MITRE ATT&CK techniques"
-            )
+            recommendations.append("Implement mitigations for identified MITRE ATT&CK techniques")
 
         # General recommendations
-        recommendations.extend([
-            "Update security policies based on lessons learned",
-            "Conduct security awareness training for affected teams",
-            "Review and update incident response procedures",
-        ])
+        recommendations.extend(
+            [
+                "Update security policies based on lessons learned",
+                "Conduct security awareness training for affected teams",
+                "Review and update incident response procedures",
+            ]
+        )
 
         return recommendations[:10]
 
@@ -1006,8 +1036,7 @@ class ReportGenerationAgent(BaseAgent):
         lines = []
         lines.append(f"Current Risk Level: {severity.upper()}")
         lines.append(
-            "Risk factors considered: Asset criticality, data sensitivity, "
-            "threat actor capability"
+            "Risk factors considered: Asset criticality, data sensitivity, threat actor capability"
         )
         return "\n".join(lines)
 

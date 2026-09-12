@@ -1,6 +1,5 @@
 """Unit tests for BaseAgent abstract class."""
 
-
 import pytest
 
 from backend.app.agents.base import BaseAgent
@@ -49,6 +48,7 @@ class ConcreteAgent(BaseAgent):
 
         finding = self.create_finding(task, {"processed": True})
         from backend.app.utils.datetime import utc_now
+
         now = utc_now()
         return AgentResult(
             result_id=f"result_{task.task_id}",

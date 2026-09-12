@@ -93,14 +93,17 @@ class TestDetectionEngine:
         matches = engine.evaluate_sync(sqli_event)
 
         sqli_matches = [
-            m for m in matches
-            if "sqli" in m.tags or "sql" in m.rule_name.lower()
+            m for m in matches if "sqli" in m.tags or "sql" in m.rule_name.lower()
         ]
         assert len(sqli_matches) >= 1
 
         match = sqli_matches[0]
         assert match.detection_layer == DetectionLayer.L1_DETERMINISTIC
-        assert match.severity in (EventSeverity.MEDIUM, EventSeverity.HIGH, EventSeverity.CRITICAL)
+        assert match.severity in (
+            EventSeverity.MEDIUM,
+            EventSeverity.HIGH,
+            EventSeverity.CRITICAL,
+        )
 
     def test_engine_evaluate_sync_xss(
         self, engine: DetectionEngine, xss_event: SecurityEvent
@@ -109,8 +112,7 @@ class TestDetectionEngine:
         matches = engine.evaluate_sync(xss_event)
 
         xss_matches = [
-            m for m in matches
-            if "xss" in m.tags or "xss" in m.rule_name.lower()
+            m for m in matches if "xss" in m.tags or "xss" in m.rule_name.lower()
         ]
         assert len(xss_matches) >= 1
 
@@ -139,7 +141,11 @@ class TestDetectionEngine:
         assert finding is not None
         assert finding.event_id == sqli_event.event_id
         assert finding.match_count >= 1
-        assert finding.severity in (EventSeverity.MEDIUM, EventSeverity.HIGH, EventSeverity.CRITICAL)
+        assert finding.severity in (
+            EventSeverity.MEDIUM,
+            EventSeverity.HIGH,
+            EventSeverity.CRITICAL,
+        )
         assert finding.detection_layer == DetectionLayer.L1_DETERMINISTIC
 
     @pytest.mark.asyncio
@@ -263,18 +269,20 @@ class TestDetectionEngineSigmaIntegration:
         # Add test Sigma rule
         sigma_engine = registry.get_engine(RuleType.SIGMA)
         if sigma_engine:
-            sigma_engine.add_rule_from_dict({
-                "id": "test_custom_sigma",
-                "title": "Test Custom Sigma Rule",
-                "level": "high",
-                "detection": {
-                    "selection": {
-                        "event_type|contains": ["suspicious_action"],
+            sigma_engine.add_rule_from_dict(
+                {
+                    "id": "test_custom_sigma",
+                    "title": "Test Custom Sigma Rule",
+                    "level": "high",
+                    "detection": {
+                        "selection": {
+                            "event_type|contains": ["suspicious_action"],
+                        },
+                        "condition": "selection",
                     },
-                    "condition": "selection",
-                },
-                "tags": ["attack.t1059"],
-            })
+                    "tags": ["attack.t1059"],
+                }
+            )
         return engine
 
     def test_engine_matches_sigma_rule(self, engine: DetectionEngine) -> None:

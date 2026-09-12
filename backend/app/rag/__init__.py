@@ -148,9 +148,7 @@ class FAISSIndex:
         for chunk in chunks:
             self.add_chunk(chunk)
 
-    def search(
-        self, query_embedding: list[float], top_k: int = 5
-    ) -> list[tuple[int, float]]:
+    def search(self, query_embedding: list[float], top_k: int = 5) -> list[tuple[int, float]]:
         """Search for similar chunks."""
         if not self._initialized or len(self.chunks) == 0:
             return []
@@ -375,10 +373,10 @@ class CybersecurityRAG:
         # Add MITRE knowledge
         for technique in mitre_knowledge:
             content = f"""
-MITRE ATT&CK Technique: {technique['id']} - {technique['name']}
-Tactic: {technique['tactic']}
-Description: {technique['description']}
-Mitigations: {', '.join(technique['mitigations'])}
+MITRE ATT&CK Technique: {technique["id"]} - {technique["name"]}
+Tactic: {technique["tactic"]}
+Description: {technique["description"]}
+Mitigations: {", ".join(technique["mitigations"])}
             """.strip()
 
             chunk = self._create_chunk(
@@ -392,9 +390,9 @@ Mitigations: {', '.join(technique['mitigations'])}
         # Add playbooks
         for playbook in playbooks:
             content = f"""
-Incident Response Playbook: {playbook['name']}
+Incident Response Playbook: {playbook["name"]}
 Steps:
-{chr(10).join(f'{i+1}. {step}' for i, step in enumerate(playbook['steps']))}
+{chr(10).join(f"{i + 1}. {step}" for i, step in enumerate(playbook["steps"]))}
             """.strip()
 
             chunk = self._create_chunk(
@@ -506,8 +504,7 @@ Steps:
         context_parts = []
         for r in results:
             context_parts.append(
-                f"[Source: {r.chunk.source}, Score: {r.similarity_score:.2f}]\n"
-                f"{r.chunk.content}"
+                f"[Source: {r.chunk.source}, Score: {r.similarity_score:.2f}]\n{r.chunk.content}"
             )
         context = "\n\n---\n\n".join(context_parts)
 

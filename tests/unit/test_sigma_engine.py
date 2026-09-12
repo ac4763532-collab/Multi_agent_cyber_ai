@@ -262,17 +262,19 @@ tags:
     def test_evaluate_with_match(self, engine: SigmaEngine) -> None:
         """Verify evaluation produces matches."""
         # Add a rule
-        engine.add_rule_from_dict({
-            "id": "eval_test_rule",
-            "title": "Eval Test Rule",
-            "level": "high",
-            "detection": {
-                "selection": {
-                    "event_type|contains": ["auth_failed"],
+        engine.add_rule_from_dict(
+            {
+                "id": "eval_test_rule",
+                "title": "Eval Test Rule",
+                "level": "high",
+                "detection": {
+                    "selection": {
+                        "event_type|contains": ["auth_failed"],
+                    },
+                    "condition": "selection",
                 },
-                "condition": "selection",
-            },
-        })
+            }
+        )
 
         event = SecurityEvent(
             event_id="evt_eval_001",
@@ -291,17 +293,19 @@ tags:
 
     def test_evaluate_no_match(self, engine: SigmaEngine) -> None:
         """Verify evaluation with no matches."""
-        engine.add_rule_from_dict({
-            "id": "no_match_rule",
-            "title": "No Match Rule",
-            "level": "low",
-            "detection": {
-                "selection": {
-                    "event_type": ["very_specific_event"],
+        engine.add_rule_from_dict(
+            {
+                "id": "no_match_rule",
+                "title": "No Match Rule",
+                "level": "low",
+                "detection": {
+                    "selection": {
+                        "event_type": ["very_specific_event"],
+                    },
+                    "condition": "selection",
                 },
-                "condition": "selection",
-            },
-        })
+            }
+        )
 
         event = SecurityEvent(
             event_id="evt_no_match",
@@ -319,12 +323,14 @@ tags:
 
     def test_get_rule(self, engine: SigmaEngine) -> None:
         """Verify rule retrieval by ID."""
-        engine.add_rule_from_dict({
-            "id": "retrieve_test",
-            "title": "Retrieve Test",
-            "level": "medium",
-            "detection": {"selection": {"event_type": ["test"]}},
-        })
+        engine.add_rule_from_dict(
+            {
+                "id": "retrieve_test",
+                "title": "Retrieve Test",
+                "level": "medium",
+                "detection": {"selection": {"event_type": ["test"]}},
+            }
+        )
 
         rule = engine.get_rule("retrieve_test")
         assert rule is not None
@@ -335,30 +341,36 @@ tags:
 
     def test_list_rules(self, engine: SigmaEngine) -> None:
         """Verify listing all rules."""
-        engine.add_rule_from_dict({
-            "id": "list_rule_1",
-            "title": "List Rule 1",
-            "level": "low",
-            "detection": {"selection": {"event_type": ["a"]}},
-        })
-        engine.add_rule_from_dict({
-            "id": "list_rule_2",
-            "title": "List Rule 2",
-            "level": "high",
-            "detection": {"selection": {"event_type": ["b"]}},
-        })
+        engine.add_rule_from_dict(
+            {
+                "id": "list_rule_1",
+                "title": "List Rule 1",
+                "level": "low",
+                "detection": {"selection": {"event_type": ["a"]}},
+            }
+        )
+        engine.add_rule_from_dict(
+            {
+                "id": "list_rule_2",
+                "title": "List Rule 2",
+                "level": "high",
+                "detection": {"selection": {"event_type": ["b"]}},
+            }
+        )
 
         rules = engine.list_rules()
         assert len(rules) == 2
 
     def test_clear_rules(self, engine: SigmaEngine) -> None:
         """Verify clearing all rules."""
-        engine.add_rule_from_dict({
-            "id": "clear_test",
-            "title": "Clear Test",
-            "level": "low",
-            "detection": {"selection": {"event_type": ["x"]}},
-        })
+        engine.add_rule_from_dict(
+            {
+                "id": "clear_test",
+                "title": "Clear Test",
+                "level": "low",
+                "detection": {"selection": {"event_type": ["x"]}},
+            }
+        )
 
         assert engine.rule_count == 1
         engine.clear_rules()

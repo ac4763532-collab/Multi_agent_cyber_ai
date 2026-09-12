@@ -22,6 +22,7 @@ from backend.app.schemas.events import EventSeverity, SecurityEvent
 
 # -----------------------------------------------------------------------------
 
+
 def make_security_event(
     *,
     source: str,
@@ -70,9 +71,7 @@ def make_email_task() -> AgentTask:
                 "headers": {
                     "from": "security@bank-secure-login.xyz",
                     "to": "user@company.com",
-                    "subject": (
-                        "URGENT: Your account has been compromised! Act now!"
-                    ),
+                    "subject": ("URGENT: Your account has been compromised! Act now!"),
                     "reply-to": "support@different-domain.com",
                     "X-Mailer": "PHPMailer",
                 },
@@ -80,6 +79,7 @@ def make_email_task() -> AgentTask:
             }
         },
     )
+
 
 def make_log_task() -> AgentTask:
     """Create a brute-force authentication log task."""
@@ -108,11 +108,13 @@ def make_log_task() -> AgentTask:
         },
     )
 
+
 # -----------------------------------------------------------------------------
 
 # REGEX ENGINE
 
 # -----------------------------------------------------------------------------
+
 
 def test_regex_engine_loads_builtin_rules():
     """Regex engine should load builtin rules."""
@@ -120,6 +122,7 @@ def test_regex_engine_loads_builtin_rules():
     engine = RegexEngine(load_builtin=True)
 
     assert engine.rule_count > 0
+
 
 def test_regex_engine_detects_or_sql_injection():
     """Regex engine should detect OR-based SQL injection."""
@@ -162,28 +165,18 @@ def test_regex_engine_detects_union_sql_injection():
         severity=EventSeverity.HIGH,
         raw_data={
             "method": "GET",
-            "url": (
-                "/api?id=1 UNION SELECT username,password "
-                "FROM users--"
-            ),
+            "url": ("/api?id=1 UNION SELECT username,password FROM users--"),
             "raw_string": (
-                "GET /api?id=1 UNION SELECT username,password "
-                "FROM users-- HTTP/1.1"
+                "GET /api?id=1 UNION SELECT username,password FROM users-- HTTP/1.1"
             ),
         },
         normalized_data={
             "event.category": "web",
             "event.type": "http_request",
             "http.request.method": "GET",
-            "url.original": (
-                "/api?id=1 UNION SELECT username,password "
-                "FROM users--"
-            ),
+            "url.original": ("/api?id=1 UNION SELECT username,password FROM users--"),
         },
-        url=(
-            "/api?id=1 UNION SELECT username,password "
-            "FROM users--"
-        ),
+        url=("/api?id=1 UNION SELECT username,password FROM users--"),
     )
 
     matches = engine.evaluate(event)
@@ -196,6 +189,7 @@ def test_regex_engine_detects_union_sql_injection():
 # IOC ENGINE
 
 # -----------------------------------------------------------------------------
+
 
 def test_ioc_store_loads_indicators():
     """IoC store should contain IP, domain, and hash indicators."""
@@ -220,10 +214,7 @@ def test_ioc_engine_detects_malicious_ip():
         event_type="connection",
         severity=EventSeverity.HIGH,
         raw_data={
-            "message": (
-                "Connection from 203.0.113.100 "
-                "to internal server"
-            ),
+            "message": ("Connection from 203.0.113.100 to internal server"),
             "source_ip": "203.0.113.100",
         },
         normalized_data={
@@ -238,16 +229,15 @@ def test_ioc_engine_detects_malicious_ip():
 
     assert matches, "Malicious IP 203.0.113.100 was not detected"
 
-    assert any(
-        match.matched_value == "203.0.113.100"
-        for match in matches
-    )
+    assert any(match.matched_value == "203.0.113.100" for match in matches)
+
 
 # -----------------------------------------------------------------------------
 
 # SIGMA ENGINE
 
 # -----------------------------------------------------------------------------
+
 
 def test_sigma_engine_initializes():
     """Sigma engine should initialize successfully."""
@@ -262,6 +252,7 @@ def test_sigma_engine_initializes():
 # EMAIL VERIFICATION AGENT
 
 # -----------------------------------------------------------------------------
+
 
 @pytest.mark.asyncio
 async def test_email_verification_agent():
@@ -278,9 +269,7 @@ async def test_email_verification_agent():
         f"errors={result.errors}"
     )
 
-    assert result.finding is not None, (
-        "EmailVerificationAgent produced no finding"
-    )
+    assert result.finding is not None, "EmailVerificationAgent produced no finding"
 
 
 # -----------------------------------------------------------------------------
@@ -288,6 +277,7 @@ async def test_email_verification_agent():
 # LOG ANALYZER AGENT
 
 # -----------------------------------------------------------------------------
+
 
 @pytest.mark.asyncio
 async def test_log_analyzer_agent():
@@ -297,22 +287,20 @@ async def test_log_analyzer_agent():
     result = await agent.execute(task)
 
     assert result.status.value == "success", (
-        f"LogAnalyzerAgent failed: "
-        f"status={result.status.value}, "
-        f"errors={result.errors}"
+        f"LogAnalyzerAgent failed: status={result.status.value}, errors={result.errors}"
     )
 
-    assert result.finding is not None, (
-        "LogAnalyzerAgent produced no finding"
-    )
+    assert result.finding is not None, "LogAnalyzerAgent produced no finding"
 
     assert result.finding.detection_type.value == "brute_force"
+
 
 # -----------------------------------------------------------------------------
 
 # AGENT REGISTRY
 
 # -----------------------------------------------------------------------------
+
 
 def test_agent_registry_registers_agents():
     """Registry should register both specialized agents."""
@@ -333,13 +321,6 @@ def test_agent_registry_registers_agents():
     assert AgentType.EMAIL_VERIFICATION in registered_types
     assert AgentType.LOG_ANALYZER in registered_types
 
-    assert (
-        registry.get_agent(AgentType.EMAIL_VERIFICATION)
-        is email_agent
-    )
+    assert registry.get_agent(AgentType.EMAIL_VERIFICATION) is email_agent
 
-    assert (
-        registry.get_agent(AgentType.LOG_ANALYZER)
-        is log_agent
-    )
-
+    assert registry.get_agent(AgentType.LOG_ANALYZER) is log_agent

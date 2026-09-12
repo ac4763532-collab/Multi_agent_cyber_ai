@@ -53,9 +53,7 @@ def get_searchable_fields(event: SecurityEvent) -> dict[str, Any]:
         "source_type": event.source_type,
         "event_type": event.event_type,
         "severity": (
-            event.severity.value
-            if isinstance(event.severity, EventSeverity)
-            else event.severity
+            event.severity.value if isinstance(event.severity, EventSeverity) else event.severity
         ),
         "source_ip": event.source_ip,
         "destination_ip": event.destination_ip,

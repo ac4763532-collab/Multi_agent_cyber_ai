@@ -1,6 +1,5 @@
 """Unit tests for EmailVerificationAgent."""
 
-
 import pytest
 
 from backend.app.agents.models import AgentTask, AgentType, ResultStatus
@@ -99,7 +98,10 @@ class TestEmailVerificationAgent:
         assert result.status == ResultStatus.SUCCESS
         assert result.finding is not None
         finding = result.finding
-        assert finding.classification in [EmailClassification.BENIGN, EmailClassification.SUSPICIOUS]
+        assert finding.classification in [
+            EmailClassification.BENIGN,
+            EmailClassification.SUSPICIOUS,
+        ]
 
     @pytest.mark.asyncio
     async def test_detect_sender_mismatch(self, agent):

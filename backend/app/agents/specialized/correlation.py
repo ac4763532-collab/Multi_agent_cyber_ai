@@ -61,9 +61,7 @@ class CorrelationConfig(BaseModel):
     )
 
     # Attack chain detection
-    min_chain_events: int = Field(
-        default=3, ge=2, description="Minimum events for attack chain"
-    )
+    min_chain_events: int = Field(default=3, ge=2, description="Minimum events for attack chain")
     chain_timeout_sec: int = Field(
         default=86400, ge=3600, description="Max time span for attack chain"
     )
@@ -409,9 +407,7 @@ class CorrelationAgent(BaseAgent):
         if event.username:
             self._events_by_user[event.username].append(event)
 
-    def _correlate_by_source(
-        self, new_events: list[CorrelatedEvent]
-    ) -> CorrelationFinding | None:
+    def _correlate_by_source(self, new_events: list[CorrelatedEvent]) -> CorrelationFinding | None:
         """Correlate events from the same source."""
         for event in new_events:
             if not event.source_ip:
@@ -428,9 +424,7 @@ class CorrelationAgent(BaseAgent):
 
         return None
 
-    def _correlate_by_target(
-        self, new_events: list[CorrelatedEvent]
-    ) -> CorrelationFinding | None:
+    def _correlate_by_target(self, new_events: list[CorrelatedEvent]) -> CorrelationFinding | None:
         """Correlate events targeting the same destination."""
         for event in new_events:
             if not event.destination_ip:
@@ -446,9 +440,7 @@ class CorrelationAgent(BaseAgent):
 
         return None
 
-    def _correlate_by_user(
-        self, new_events: list[CorrelatedEvent]
-    ) -> CorrelationFinding | None:
+    def _correlate_by_user(self, new_events: list[CorrelatedEvent]) -> CorrelationFinding | None:
         """Correlate events for the same user."""
         for event in new_events:
             if not event.username:
@@ -464,9 +456,7 @@ class CorrelationAgent(BaseAgent):
 
         return None
 
-    def _detect_attack_chain(
-        self, events: list[CorrelatedEvent]
-    ) -> AttackChain | None:
+    def _detect_attack_chain(self, events: list[CorrelatedEvent]) -> AttackChain | None:
         """Detect attack chain from events."""
         # Need minimum events with attack stages
         staged_events = [e for e in events if e.attack_stage]
@@ -586,9 +576,7 @@ class CorrelationAgent(BaseAgent):
             mitre_tactics=["defense-evasion", "persistence"],
         )
 
-    def _create_chain_finding(
-        self, task: AgentTask, chain: AttackChain
-    ) -> CorrelationFinding:
+    def _create_chain_finding(self, task: AgentTask, chain: AttackChain) -> CorrelationFinding:
         """Create finding for attack chain detection."""
         return CorrelationFinding(
             finding_id=f"corr_chain_{uuid.uuid4().hex}",
@@ -610,9 +598,7 @@ class CorrelationAgent(BaseAgent):
             mitre_tactics=[s.value.replace("_", "-") for s in chain.stages],
         )
 
-    def _determine_correlation_severity(
-        self, events: list[CorrelatedEvent]
-    ) -> EventSeverity:
+    def _determine_correlation_severity(self, events: list[CorrelatedEvent]) -> EventSeverity:
         """Determine severity based on correlated events."""
         if any(e.severity == EventSeverity.CRITICAL for e in events):
             return EventSeverity.CRITICAL

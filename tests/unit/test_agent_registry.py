@@ -17,7 +17,9 @@ from backend.app.agents.registry import AgentRegistry, get_agent_registry
 class MockAgent(BaseAgent):
     """Mock agent for testing registry."""
 
-    def __init__(self, agent_id: str, agent_type: AgentType, caps: list[str] | None = None):
+    def __init__(
+        self, agent_id: str, agent_type: AgentType, caps: list[str] | None = None
+    ):
         super().__init__()
         self._agent_id = agent_id
         self._agent_type = agent_type
@@ -44,6 +46,7 @@ class MockAgent(BaseAgent):
 
     async def process_task(self, task: AgentTask) -> AgentResult:
         from backend.app.utils.datetime import utc_now
+
         now = utc_now()
         return AgentResult(
             result_id="mock_result",
@@ -122,9 +125,15 @@ class TestAgentRegistry:
     def test_get_by_capability(self):
         """Get agents by capability."""
         registry = AgentRegistry()
-        registry.register(MockAgent("a1", AgentType.EMAIL_VERIFICATION, ["email", "phishing"]))
-        registry.register(MockAgent("a2", AgentType.LOG_ANALYZER, ["logs", "brute_force"]))
-        registry.register(MockAgent("a3", AgentType.NETWORK_THREAT, ["network", "phishing"]))
+        registry.register(
+            MockAgent("a1", AgentType.EMAIL_VERIFICATION, ["email", "phishing"])
+        )
+        registry.register(
+            MockAgent("a2", AgentType.LOG_ANALYZER, ["logs", "brute_force"])
+        )
+        registry.register(
+            MockAgent("a3", AgentType.NETWORK_THREAT, ["network", "phishing"])
+        )
 
         phishing_agents = registry.get_by_capability("phishing")
         assert len(phishing_agents) == 2
@@ -167,6 +176,7 @@ class TestGetAgentRegistry:
         """Singleton returns same instance."""
         # Clear existing singleton for test isolation
         import backend.app.agents.registry as registry_module
+
         registry_module._registry = None
 
         r1 = get_agent_registry()
@@ -176,6 +186,7 @@ class TestGetAgentRegistry:
     def test_registry_persists_state(self):
         """Singleton maintains state."""
         import backend.app.agents.registry as registry_module
+
         registry_module._registry = None
 
         registry = get_agent_registry()

@@ -180,56 +180,66 @@ class CrossDomainCorrelationEngine:
         shared_ips = self._find_shared_values(findings, ["source_ip", "dest_ip", "ip"])
         if shared_ips:
             result.shared_indicators["ip"] = shared_ips
-            components.append(CorrelationScoreComponent(
-                signal=CorrelationSignal.SHARED_IP,
-                weight=SIGNAL_WEIGHTS[CorrelationSignal.SHARED_IP],
-                score=min(len(shared_ips) / 2, 1.0),
-                evidence=f"Shared IPs: {', '.join(shared_ips[:3])}",
-            ))
+            components.append(
+                CorrelationScoreComponent(
+                    signal=CorrelationSignal.SHARED_IP,
+                    weight=SIGNAL_WEIGHTS[CorrelationSignal.SHARED_IP],
+                    score=min(len(shared_ips) / 2, 1.0),
+                    evidence=f"Shared IPs: {', '.join(shared_ips[:3])}",
+                )
+            )
 
         # Check shared domains
         shared_domains = self._find_shared_values(findings, ["domain", "hostname"])
         if shared_domains:
             result.shared_indicators["domain"] = shared_domains
-            components.append(CorrelationScoreComponent(
-                signal=CorrelationSignal.SHARED_DOMAIN,
-                weight=SIGNAL_WEIGHTS[CorrelationSignal.SHARED_DOMAIN],
-                score=min(len(shared_domains) / 2, 1.0),
-                evidence=f"Shared domains: {', '.join(shared_domains[:3])}",
-            ))
+            components.append(
+                CorrelationScoreComponent(
+                    signal=CorrelationSignal.SHARED_DOMAIN,
+                    weight=SIGNAL_WEIGHTS[CorrelationSignal.SHARED_DOMAIN],
+                    score=min(len(shared_domains) / 2, 1.0),
+                    evidence=f"Shared domains: {', '.join(shared_domains[:3])}",
+                )
+            )
 
         # Check shared users
         shared_users = self._find_shared_values(findings, ["username", "user", "email"])
         if shared_users:
             result.shared_indicators["user"] = shared_users
-            components.append(CorrelationScoreComponent(
-                signal=CorrelationSignal.SHARED_USER,
-                weight=SIGNAL_WEIGHTS[CorrelationSignal.SHARED_USER],
-                score=min(len(shared_users) / 2, 1.0),
-                evidence=f"Shared users: {', '.join(shared_users[:3])}",
-            ))
+            components.append(
+                CorrelationScoreComponent(
+                    signal=CorrelationSignal.SHARED_USER,
+                    weight=SIGNAL_WEIGHTS[CorrelationSignal.SHARED_USER],
+                    score=min(len(shared_users) / 2, 1.0),
+                    evidence=f"Shared users: {', '.join(shared_users[:3])}",
+                )
+            )
 
         # Check temporal proximity
         time_diff = (result.time_window_end - result.time_window_start).total_seconds()
         if time_diff < 300:  # 5 minutes
             proximity_score = 1.0 - (time_diff / 300)
-            components.append(CorrelationScoreComponent(
-                signal=CorrelationSignal.TEMPORAL_PROXIMITY,
-                weight=SIGNAL_WEIGHTS[CorrelationSignal.TEMPORAL_PROXIMITY],
-                score=proximity_score,
-                evidence=f"Events within {int(time_diff)} seconds",
-            ))
+            components.append(
+                CorrelationScoreComponent(
+                    signal=CorrelationSignal.TEMPORAL_PROXIMITY,
+                    weight=SIGNAL_WEIGHTS[CorrelationSignal.TEMPORAL_PROXIMITY],
+                    score=proximity_score,
+                    evidence=f"Events within {int(time_diff)} seconds",
+                )
+            )
 
         # Check compatible threats
         threat_types = [f.finding_type for f in findings]
         compatible = self._check_compatible_threats(threat_types)
         if compatible:
-            components.append(CorrelationScoreComponent(
-                signal=CorrelationSignal.COMPATIBLE_THREAT,
-                weight=SIGNAL_WEIGHTS[CorrelationSignal.COMPATIBLE_THREAT],
-                score=0.8,
-                evidence=f"Compatible threat types: {', '.join(threat_types[:3])}",
-            ))
+            components.append(
+                CorrelationScoreComponent(
+                    signal=CorrelationSignal.COMPATIBLE_THREAT,
+                    weight=SIGNAL_WEIGHTS[CorrelationSignal.COMPATIBLE_THREAT],
+                    score=0.8,
+                    evidence=f"Compatible threat types: {', '.join(threat_types[:3])}",
+                )
+            )
 
         # Calculate total score
         if components:
@@ -259,9 +269,7 @@ class CrossDomainCorrelationEngine:
 
         return result
 
-    def _find_shared_values(
-        self, findings: list[Finding], fields: list[str]
-    ) -> list[str]:
+    def _find_shared_values(self, findings: list[Finding], fields: list[str]) -> list[str]:
         """Find values shared across findings."""
         values_by_finding: list[set[str]] = []
 
@@ -303,20 +311,20 @@ class CrossDomainCorrelationEngine:
 
         # Map finding types to attack chain stages
         stage_mapping = {
-            AttackChainStage.INITIAL_ACCESS: [
-                "phishing", "exploit", "initial_access", "email"
-            ],
+            AttackChainStage.INITIAL_ACCESS: ["phishing", "exploit", "initial_access", "email"],
             AttackChainStage.CREDENTIAL_ACTIVITY: [
-                "brute_force", "credential", "authentication", "login"
+                "brute_force",
+                "credential",
+                "authentication",
+                "login",
             ],
-            AttackChainStage.SUSPICIOUS_ACTIVITY: [
-                "malware", "suspicious", "anomaly", "threat"
-            ],
-            AttackChainStage.NETWORK_ACTIVITY: [
-                "c2", "network", "lateral", "scan", "exfiltration"
-            ],
+            AttackChainStage.SUSPICIOUS_ACTIVITY: ["malware", "suspicious", "anomaly", "threat"],
+            AttackChainStage.NETWORK_ACTIVITY: ["c2", "network", "lateral", "scan", "exfiltration"],
             AttackChainStage.POTENTIAL_IMPACT: [
-                "ransomware", "impact", "data_breach", "destruction"
+                "ransomware",
+                "impact",
+                "data_breach",
+                "destruction",
             ],
         }
 
@@ -329,15 +337,11 @@ class CrossDomainCorrelationEngine:
 
         return stages
 
-    def _generate_reasoning(
-        self, result: CorrelationResult, findings: list[Finding]
-    ) -> str:
+    def _generate_reasoning(self, result: CorrelationResult, findings: list[Finding]) -> str:
         """Generate reasoning for correlation."""
         parts = []
 
-        parts.append(
-            f"Correlated {len(findings)} findings from {len(result.sources)} sources."
-        )
+        parts.append(f"Correlated {len(findings)} findings from {len(result.sources)} sources.")
 
         if result.shared_indicators:
             indicators = []
@@ -386,9 +390,7 @@ class CrossDomainCorrelationEngine:
 
     def get_recent_correlations(self, limit: int = 100) -> list[CorrelationResult]:
         """Get recent correlations."""
-        return sorted(
-            self._correlations, key=lambda c: c.created_at, reverse=True
-        )[:limit]
+        return sorted(self._correlations, key=lambda c: c.created_at, reverse=True)[:limit]
 
     def get_metrics(self) -> dict[str, Any]:
         """Get engine metrics."""

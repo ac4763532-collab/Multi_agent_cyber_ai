@@ -228,8 +228,7 @@ class ThreatIntelligenceAgent(BaseAgent):
         """Validate task has IoC data."""
         payload = task.payload or {}
         return any(
-            k in payload
-            for k in ["iocs", "indicators", "event", "finding", "ip", "domain", "hash"]
+            k in payload for k in ["iocs", "indicators", "event", "finding", "ip", "domain", "hash"]
         )
 
     async def process_task(self, task: AgentTask) -> AgentResult:
@@ -541,9 +540,7 @@ class ThreatIntelligenceAgent(BaseAgent):
             return 0.0
 
         # Weight malicious indicators heavily
-        malicious_scores = [
-            e.confidence_score for e in enrichments if e.is_known_malicious
-        ]
+        malicious_scores = [e.confidence_score for e in enrichments if e.is_known_malicious]
 
         if not malicious_scores:
             return 0.1  # Low score if no known malicious

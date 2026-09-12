@@ -49,9 +49,7 @@ class TestReportGenerationAgent:
         self, agent: ReportGenerationAgent, base_task: AgentTask
     ) -> None:
         """Test task validation with incident."""
-        base_task.payload = {
-            "incident": {"incident_id": "inc_001", "severity": "high"}
-        }
+        base_task.payload = {"incident": {"incident_id": "inc_001", "severity": "high"}}
         assert await agent.validate_task(base_task) is True
 
     @pytest.mark.asyncio

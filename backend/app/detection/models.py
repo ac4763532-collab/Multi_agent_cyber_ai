@@ -36,9 +36,7 @@ class DetectionMatch(BaseModel):
     )
 
     # Rule identification
-    rule_id: str = Field(
-        ..., min_length=1, max_length=128, description="Unique rule identifier"
-    )
+    rule_id: str = Field(..., min_length=1, max_length=128, description="Unique rule identifier")
     rule_name: str = Field(
         ..., min_length=1, max_length=256, description="Human-readable rule name"
     )

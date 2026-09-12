@@ -56,9 +56,7 @@ class TestCorrelationAgent:
         self, agent: CorrelationAgent, base_task: AgentTask
     ) -> None:
         """Test task validation with findings."""
-        base_task.payload = {
-            "findings": [{"finding_id": "f1"}, {"finding_id": "f2"}]
-        }
+        base_task.payload = {"findings": [{"finding_id": "f1"}, {"finding_id": "f2"}]}
         assert await agent.validate_task(base_task) is True
 
     @pytest.mark.asyncio

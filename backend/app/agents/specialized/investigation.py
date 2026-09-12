@@ -159,8 +159,7 @@ class InvestigationAgent(BaseAgent):
         """Validate task has investigation data."""
         payload = task.payload or {}
         return any(
-            k in payload
-            for k in ["incident", "finding", "events", "alert", "investigation_id"]
+            k in payload for k in ["incident", "finding", "events", "alert", "investigation_id"]
         )
 
     async def process_task(self, task: AgentTask) -> AgentResult:
@@ -170,9 +169,7 @@ class InvestigationAgent(BaseAgent):
 
         try:
             # Create or retrieve investigation
-            investigation_id = payload.get(
-                "investigation_id", f"inv_{uuid.uuid4().hex}"
-            )
+            investigation_id = payload.get("investigation_id", f"inv_{uuid.uuid4().hex}")
 
             # Extract events and findings
             events = self._extract_events(payload)
@@ -503,8 +500,7 @@ class InvestigationAgent(BaseAgent):
 
         # Generate hypothesis
         high_sev_events = [
-            t for t in timeline
-            if t.severity in (EventSeverity.HIGH, EventSeverity.CRITICAL)
+            t for t in timeline if t.severity in (EventSeverity.HIGH, EventSeverity.CRITICAL)
         ]
         high_severity = len(high_sev_events)
         if high_severity > 3:

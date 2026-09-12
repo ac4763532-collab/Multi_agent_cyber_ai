@@ -264,13 +264,13 @@ class PDFGenerator:
             report,
             "Executive Summary",
             f"""
-Incident ID: {incident.get('incident_id')}
-Severity: {incident.get('severity', 'Unknown')}
-Status: {incident.get('status', 'Unknown')}
-Type: {incident.get('incident_type', 'Unknown')}
+Incident ID: {incident.get("incident_id")}
+Severity: {incident.get("severity", "Unknown")}
+Status: {incident.get("status", "Unknown")}
+Type: {incident.get("incident_type", "Unknown")}
 
 Description:
-{incident.get('description', 'No description available.')}
+{incident.get("description", "No description available.")}
             """.strip(),
         )
 
@@ -282,13 +282,13 @@ Description:
             "Impact Assessment",
             f"""
 Affected Assets: {len(assets)}
-{chr(10).join(f'  - {a}' for a in assets) if assets else '  None identified'}
+{chr(10).join(f"  - {a}" for a in assets) if assets else "  None identified"}
 
 Affected Users: {len(users)}
-{chr(10).join(f'  - {u}' for u in users) if users else '  None identified'}
+{chr(10).join(f"  - {u}" for u in users) if users else "  None identified"}
 
 Impact Assessment:
-{incident.get('impact_assessment', 'Not yet assessed.')}
+{incident.get("impact_assessment", "Not yet assessed.")}
             """.strip(),
         )
 
@@ -346,10 +346,10 @@ Impact Assessment:
             "Security Overview",
             f"""
 Report Period: {period}
-Total Incidents: {metrics.get('total_incidents', 0)}
-Open Incidents: {metrics.get('open_incidents', 0)}
-Closed Incidents: {metrics.get('closed_incidents', 0)}
-Mean Time to Resolve: {metrics.get('mttr_minutes', 0):.0f} minutes
+Total Incidents: {metrics.get("total_incidents", 0)}
+Open Incidents: {metrics.get("open_incidents", 0)}
+Closed Incidents: {metrics.get("closed_incidents", 0)}
+Mean Time to Resolve: {metrics.get("mttr_minutes", 0):.0f} minutes
             """.strip(),
         )
 

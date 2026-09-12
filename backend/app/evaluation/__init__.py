@@ -51,10 +51,7 @@ class ConfusionMatrix(BaseModel):
     @property
     def total(self) -> int:
         return (
-            self.true_positives
-            + self.false_positives
-            + self.true_negatives
-            + self.false_negatives
+            self.true_positives + self.false_positives + self.true_negatives + self.false_negatives
         )
 
     @property

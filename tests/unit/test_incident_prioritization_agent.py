@@ -32,7 +32,10 @@ class TestIncidentPrioritizationAgent:
 
     def test_agent_properties(self, agent: IncidentPrioritizationAgent) -> None:
         """Test agent properties."""
-        assert "incident_prioritization" in agent.agent_id or "prioritization" in agent.agent_id
+        assert (
+            "incident_prioritization" in agent.agent_id
+            or "prioritization" in agent.agent_id
+        )
         assert agent.name == "Incident Prioritization Agent"
         assert agent.agent_type == AgentType.INCIDENT_PRIORITIZATION
         assert len(agent.capabilities) > 0

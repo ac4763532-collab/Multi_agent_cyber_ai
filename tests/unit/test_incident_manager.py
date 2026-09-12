@@ -203,6 +203,7 @@ class TestIncidentManagerSingleton:
     def test_singleton_returns_same_instance(self) -> None:
         """Singleton should return same instance."""
         import backend.app.incidents as incidents_module
+
         incidents_module._incident_manager = None
 
         m1 = get_incident_manager()
