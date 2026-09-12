@@ -6,7 +6,7 @@ import os
 from datetime import datetime
 from typing import Any
 
-import numpy as np
+import numpy as np  # type: ignore[import-not-found]
 from pydantic import BaseModel, Field
 
 from backend.app.utils.datetime import utc_now
@@ -111,7 +111,7 @@ class FAISSIndex:
 
         # Try to import faiss, fall back to numpy-based search
         try:
-            import faiss
+            import faiss  # type: ignore[import-not-found]
 
             self.faiss = faiss
             self.use_faiss = True
