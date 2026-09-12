@@ -2,7 +2,7 @@
 """Functional tests for detection engines and specialized agents."""
 
 import uuid
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 import pytest
 
@@ -16,7 +16,6 @@ from backend.app.detection.rules.ioc_engine import IoCEngine, IoCStore
 from backend.app.detection.rules.regex_engine import RegexEngine
 from backend.app.detection.rules.sigma_engine import SigmaEngine
 from backend.app.schemas.events import EventSeverity, SecurityEvent
-
 
 # -----------------------------------------------------------------------------
 # HELPERS
@@ -35,7 +34,7 @@ def make_security_event(
     """Create a valid SecurityEvent for functional testing."""
     return SecurityEvent(
         event_id=str(uuid.uuid4()),
-        timestamp=datetime.now(timezone.utc),
+        timestamp=datetime.now(UTC),
         source=source,
         source_type=source_type,
         event_type=event_type,
@@ -83,7 +82,7 @@ def make_log_task() -> AgentTask:
     for _ in range(6):
         log_events.append(
             {
-                "timestamp": datetime.now(timezone.utc).isoformat(),
+                "timestamp": datetime.now(UTC).isoformat(),
                 "source_ip": "10.0.0.50",
                 "event_type": "authentication",
                 "status": "failed",

@@ -235,7 +235,7 @@ class ThreatIntelligenceEngine:
                 if result:
                     results.append(result)
                     self.cache.set(result)
-            except Exception:
+            except Exception:  # noqa: S110
                 # Log error but continue with other providers
                 pass
 

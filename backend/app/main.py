@@ -46,7 +46,8 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
             )
         except TimeoutError:
             logger.warning(
-                "Telemetry worker start exceeded timeout; API will continue without live consumption"
+                "Telemetry worker start exceeded timeout; "
+                "API will continue without live consumption"
             )
         app.state.telemetry_worker = worker
     yield

@@ -87,7 +87,7 @@ class SimpleEmbedding(EmbeddingProvider):
 
         for token in tokens:
             # Hash token to get consistent indices
-            h = int(hashlib.md5(token.encode()).hexdigest(), 16)
+            h = int(hashlib.md5(token.encode()).hexdigest(), 16)  # noqa: S324
             idx = h % self.dim
             embedding[idx] += 1.0
 
@@ -159,7 +159,11 @@ class FAISSIndex:
 
         if self.use_faiss:
             scores, indices = self.index.search(query, min(top_k, len(self.chunks)))
-            return [(int(idx), float(score)) for idx, score in zip(indices[0], scores[0]) if idx >= 0]
+            return [
+                (int(idx), float(score))
+                for idx, score in zip(indices[0], scores[0], strict=False)
+                if idx >= 0
+            ]
         else:
             # Numpy fallback
             vectors = np.array(self._vectors)
@@ -186,7 +190,7 @@ class FAISSIndex:
         """Load index from disk."""
         try:
             # Load chunks
-            with open(f"{path}_chunks.json", "r") as f:
+            with open(f"{path}_chunks.json") as f:
                 chunks_data = json.load(f)
                 self.chunks = [DocumentChunk(**c) for c in chunks_data]
 
@@ -244,43 +248,88 @@ class CybersecurityRAG:
                 "id": "T1566",
                 "name": "Phishing",
                 "tactic": "Initial Access",
-                "description": "Adversaries may send phishing messages to gain access to victim systems. Phishing involves social engineering techniques to trick users into clicking malicious links or opening attachments.",
-                "mitigations": ["User training", "Email filtering", "Multi-factor authentication"],
+                "description": (
+                    "Adversaries may send phishing messages to gain access to victim "
+                    "systems. Phishing involves social engineering techniques to trick "
+                    "users into clicking malicious links or opening attachments."
+                ),
+                "mitigations": [
+                    "User training",
+                    "Email filtering",
+                    "Multi-factor authentication",
+                ],
             },
             {
                 "id": "T1110",
                 "name": "Brute Force",
                 "tactic": "Credential Access",
-                "description": "Adversaries may use brute force techniques to gain access to accounts when passwords are unknown or when password hashes are obtained.",
-                "mitigations": ["Account lockout policies", "Multi-factor authentication", "Password complexity requirements"],
+                "description": (
+                    "Adversaries may use brute force techniques to gain access to "
+                    "accounts when passwords are unknown or when password hashes "
+                    "are obtained."
+                ),
+                "mitigations": [
+                    "Account lockout policies",
+                    "Multi-factor authentication",
+                    "Password complexity requirements",
+                ],
             },
             {
                 "id": "T1071",
                 "name": "Application Layer Protocol",
                 "tactic": "Command and Control",
-                "description": "Adversaries may communicate using application layer protocols to avoid detection. Common protocols include HTTP/HTTPS, DNS, and SMTP.",
-                "mitigations": ["Network intrusion detection", "SSL/TLS inspection", "DNS monitoring"],
+                "description": (
+                    "Adversaries may communicate using application layer protocols "
+                    "to avoid detection. Common protocols include HTTP/HTTPS, DNS, "
+                    "and SMTP."
+                ),
+                "mitigations": [
+                    "Network intrusion detection",
+                    "SSL/TLS inspection",
+                    "DNS monitoring",
+                ],
             },
             {
                 "id": "T1059",
                 "name": "Command and Scripting Interpreter",
                 "tactic": "Execution",
-                "description": "Adversaries may abuse command and script interpreters to execute commands, scripts, or binaries.",
-                "mitigations": ["Disable or remove unused interpreters", "Code signing", "Execution prevention"],
+                "description": (
+                    "Adversaries may abuse command and script interpreters to "
+                    "execute commands, scripts, or binaries."
+                ),
+                "mitigations": [
+                    "Disable or remove unused interpreters",
+                    "Code signing",
+                    "Execution prevention",
+                ],
             },
             {
                 "id": "T1048",
                 "name": "Exfiltration Over Alternative Protocol",
                 "tactic": "Exfiltration",
-                "description": "Adversaries may steal data by exfiltrating it over a different protocol than the existing command and control channel.",
-                "mitigations": ["Network segmentation", "Data loss prevention", "Egress filtering"],
+                "description": (
+                    "Adversaries may steal data by exfiltrating it over a different "
+                    "protocol than the existing command and control channel."
+                ),
+                "mitigations": [
+                    "Network segmentation",
+                    "Data loss prevention",
+                    "Egress filtering",
+                ],
             },
             {
                 "id": "T1486",
                 "name": "Data Encrypted for Impact",
                 "tactic": "Impact",
-                "description": "Adversaries may encrypt data on target systems to interrupt availability. This is commonly associated with ransomware.",
-                "mitigations": ["Data backup", "Behavior-based detection", "Application isolation"],
+                "description": (
+                    "Adversaries may encrypt data on target systems to interrupt "
+                    "availability. This is commonly associated with ransomware."
+                ),
+                "mitigations": [
+                    "Data backup",
+                    "Behavior-based detection",
+                    "Application isolation",
+                ],
             },
         ]
 
@@ -364,8 +413,8 @@ Steps:
         metadata: dict[str, Any] | None = None,
     ) -> DocumentChunk:
         """Create a document chunk with embedding."""
-        chunk_id = hashlib.md5(content.encode()).hexdigest()[:16]
-        doc_id = hashlib.md5(source.encode()).hexdigest()[:16]
+        chunk_id = hashlib.md5(content.encode()).hexdigest()[:16]  # noqa: S324
+        doc_id = hashlib.md5(source.encode()).hexdigest()[:16]  # noqa: S324
 
         embedding = self.embedding_provider.embed_text(content)
 
@@ -432,7 +481,7 @@ Steps:
 
         # Filter and rank results
         results: list[RetrievalResult] = []
-        for rank, (idx, score) in enumerate(search_results):
+        for _rank, (idx, score) in enumerate(search_results):
             if score >= query.min_similarity and idx < len(self.index.chunks):
                 chunk = self.index.chunks[idx]
 
