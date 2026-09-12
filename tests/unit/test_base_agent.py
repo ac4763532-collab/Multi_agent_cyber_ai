@@ -1,8 +1,7 @@
 """Unit tests for BaseAgent abstract class."""
 
+
 import pytest
-from unittest.mock import AsyncMock, MagicMock, patch
-from datetime import datetime, timezone
 
 from backend.app.agents.base import BaseAgent
 from backend.app.agents.models import (
@@ -12,7 +11,6 @@ from backend.app.agents.models import (
     AgentType,
     BaseFinding,
     ResultStatus,
-    TaskStatus,
 )
 
 

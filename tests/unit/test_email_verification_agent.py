@@ -1,16 +1,15 @@
 """Unit tests for EmailVerificationAgent."""
 
-import pytest
-from unittest.mock import patch
 
+import pytest
+
+from backend.app.agents.models import AgentTask, AgentType, ResultStatus
 from backend.app.agents.specialized.email_verification import (
-    EmailVerificationAgent,
+    EmailAnalysis,
     EmailClassification,
     EmailIndicator,
-    EmailAnalysis,
-    EmailFinding,
+    EmailVerificationAgent,
 )
-from backend.app.agents.models import AgentTask, AgentType, ResultStatus
 from backend.app.detection.models import MatchConfidence
 from backend.app.schemas.events import EventSeverity
 

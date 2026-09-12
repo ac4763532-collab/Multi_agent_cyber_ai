@@ -3,6 +3,7 @@
 import pytest
 
 from backend.app.agents.base import BaseAgent
+from backend.app.agents.exceptions import AgentNotFoundError, AgentRegistrationError
 from backend.app.agents.models import (
     AgentResult,
     AgentTask,
@@ -11,7 +12,6 @@ from backend.app.agents.models import (
     ResultStatus,
 )
 from backend.app.agents.registry import AgentRegistry, get_agent_registry
-from backend.app.agents.exceptions import AgentNotFoundError, AgentRegistrationError
 
 
 class MockAgent(BaseAgent):

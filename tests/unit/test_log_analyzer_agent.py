@@ -1,17 +1,17 @@
 """Unit tests for LogAnalyzerAgent."""
 
-import pytest
-from datetime import datetime, timezone, timedelta
+from datetime import datetime, timezone
 
+import pytest
+
+from backend.app.agents.models import AgentTask, AgentType, ResultStatus
 from backend.app.agents.specialized.log_analyzer import (
+    AnomalySignal,
+    DetectionType,
     LogAnalyzerAgent,
     LogAnalyzerConfig,
     LogFinding,
-    AnomalySignal,
-    DetectionType,
 )
-from backend.app.agents.models import AgentTask, AgentType, ResultStatus
-from backend.app.schemas.events import EventSeverity
 
 
 class TestLogAnalyzerConfig:

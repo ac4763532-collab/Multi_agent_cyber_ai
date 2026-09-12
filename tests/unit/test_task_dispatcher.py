@@ -1,15 +1,16 @@
 """Unit tests for TaskDispatcher and routing."""
 
-import pytest
 from datetime import datetime, timezone
 from unittest.mock import AsyncMock, MagicMock, patch
 
+import pytest
+
+from backend.app.agents.dispatcher.dispatcher import TaskDispatcherAgent
 from backend.app.agents.dispatcher.router import TaskRouter, get_task_router
 from backend.app.agents.dispatcher.tracker import TaskTracker, get_task_tracker
-from backend.app.agents.dispatcher.dispatcher import TaskDispatcherAgent
-from backend.app.agents.models import AgentTask, AgentType, TaskStatus, TaskPriority
 from backend.app.agents.exceptions import TaskRoutingError
-from backend.app.schemas.events import SecurityEvent, EventSeverity
+from backend.app.agents.models import AgentTask, AgentType, TaskPriority, TaskStatus
+from backend.app.schemas.events import EventSeverity, SecurityEvent
 
 
 def _make_event(

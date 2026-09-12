@@ -1,6 +1,5 @@
 """Unit tests for agent models."""
 
-import pytest
 from datetime import datetime, timezone
 
 from backend.app.agents.models import (
